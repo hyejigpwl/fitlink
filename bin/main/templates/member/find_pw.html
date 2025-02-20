@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+<!-- meta_tag include -->
+<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+<title>로그인</title>
+
+<!-- 공통 css -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+	integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<!-- Linking CSS files -->
+<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+	crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<main class="container" id="findpw_pg" style="max-width:600px;">
+		<form id="findPwForm" action="/member/find_pw" method="post">
+			<h2>비밀번호 찾기</h2>
+			<label class="col-form-label mt-2" for="memId"><span
+				class="text-danger">*</span> 아이디</label> <input type="text"
+				class="form-control" placeholder="아이디" id="memId" name="memId"
+				required>
+			<label class="col-form-label mt-2" for="memName"><span
+				class="text-danger">*</span> 이름</label> <input type="text"
+				class="form-control" placeholder="이름" id="memName" name="memName"
+				required>
+			<div class="btn_wrap">
+			<button type="button" class="btn btn-secondary"onclick="location.href='/member/login'">이전으로</button>
+			<button type="submit" class="btn btn-primary">비밀번호 찾기</button>
+			</div>
+		</form>
+	</main>
+
+
+	<script th:if="${message}">
+			alert("[[${message}]]");
+		</script>
+</body>
+</html>

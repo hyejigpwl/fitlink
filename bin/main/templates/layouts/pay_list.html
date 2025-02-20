@@ -1,0 +1,208 @@
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<div th:fragment="pay_list" id="pay_list">
+
+
+	<div class="container" style="position:relative;">
+		<!-- 어두운 배경 오버레이 추가 -->
+		<div id="overlay"></div>
+
+		<div id="pay_list_popup" class="popup_style" style="display:none;">
+			<!-- 로딩 화면 -->
+			<div id="payloadingOverlay">
+			    <div class="spinner"></div>
+			    <p>내역을 불러오는 중...</p>
+			</div>
+			<div id="pay_list_popup_wrap" style="display:none;">
+			<div class="tabs">
+				<button th:if="${member.memIsmanager == false}" type="button"
+					class="tab-button active" data-tab="transferHistoryList">송금내역</button>
+				<button th:if="${member.memIsmanager == true}" type="button"
+					class="tab-button active" data-tab="transferHistoryList2">송금내역</button>
+				<button type="button" class="tab-button"
+					data-tab="chargeHistoryList">충전내역</button>
+			</div>
+
+			<!-- 송금내역 -->
+			<ul th:if="${member.memIsmanager == false}" id="transferHistoryList"
+				class="tab-content active">
+				<!-- 송금내역 리스트가 여기에 추가됩니다 -->
+			</ul>
+
+			<!-- 송금내역(관리자일 경우) -->
+			<ul th:if="${member.memIsmanager ==true}" id="transferHistoryList2"
+				class="tab-content active">
+				<!-- 송금내역 리스트가 여기에 추가됩니다 -->
+			</ul>
+
+			<!-- 충전내역 -->
+			<div id="chargeHistoryList" class="tab-content">
+				<div class="month-tab"></div>
+				<ul id="chargeHistoryContent">
+					<!-- 충전내역 리스트가 여기에 추가됩니다 -->
+				</ul>
+			</div>
+			<button type="button" id="closePopup" class="close-button">닫기</button>
+			</div>
+			
+		</div>
+
+
+		<script th:inline="javascript">
+	    // 데이터를 가져오기
+		async function fetchData() {
+		    try {
+		        // 로딩 메시지 추가
+		        document.getElementById("pay_list_popup").style.display = "block";
+		        document.getElementById("payloadingOverlay").style.display = "flex";
+				document.getElementById("overlay").style.display = "block";
+		        
+		        const payListPopup = document.getElementById("pay_list_popup");
+		        const payListPopupWrap = document.getElementById("pay_list_popup_wrap");
+		        const overlay = document.getElementById("overlay");
+		
+
+		        // 송금 내역 요청
+		        const transferResponse = await fetch("/member/pay_list/transfer", {
+		            method: "GET",
+		            headers: { "Content-Type": "application/json" }
+		        });
+		        const transferData = await transferResponse.json();
+		
+		        // 관리자 송금 내역 요청
+		        const transferManagerResponse = await fetch("/member/pay_list/transfer_manager", {
+		            method: "GET",
+		            headers: { "Content-Type": "application/json" }
+		        });
+		        const transferDataManager = await transferManagerResponse.json();
+		
+		        // 충전 내역 요청
+		        const chargeResponse = await fetch("/member/pay_list/charge", {
+		            method: "GET",
+		            headers: { "Content-Type": "application/json" }
+		        });
+		        const chargeData = await chargeResponse.json();
+		
+		        
+		        document.getElementById("payloadingOverlay").style.display = "none";
+		        payListPopupWrap.style.display="block";
+		
+		        // 송금 내역 추가
+		        const transferList = document.getElementById("transferHistoryList");
+		        if (transferList) {
+		        	transferList.innerHTML = ""; // 기존 데이터 초기화
+				    if (transferData && transferData.length > 0) {
+				    	transferData.forEach(history => {
+				            const li = document.createElement("li");
+				            const icon = history.status === '송금성공'
+				                ? '<i class="bi bi-dash-circle" style="color: red"></i>'
+				                : '<i class="bi bi-plus-circle" style="color: blue"></i>';
+				            li.innerHTML = `
+				                <p style="color:#999">${history.transferDate.replace("T", " ")}</p>
+				                <p>${history.status} | ${history.receiverId || ''}</p>
+								<p>사유 : <span>${history.memo}</span></p>
+				                <strong>${icon} ${history.amount.toLocaleString()}원</strong>
+				                <hr>
+				            `;
+				            transferList.appendChild(li);
+				        });
+				    } else {
+				    	transferList.innerHTML = "<li>송금내역이 없습니다.</li>";
+				    }
+				}
+		
+		        // 송금 내역 추가 [매니저 계정]
+		        const transferListManager = document.getElementById("transferHistoryList2");
+				if (transferListManager) {
+				    transferListManager.innerHTML = ""; // 기존 데이터 초기화
+				    if (transferDataManager && transferDataManager.length > 0) {
+				        transferDataManager.forEach(history => {
+				            const li = document.createElement("li");
+				            const icon = history.status === '송금성공'
+				                ? '<i class="bi bi-plus-circle" style="color: blue"></i>'
+				                : '<i class="bi bi-dash-circle" style="color: red"></i>';
+			                const statusText = history.status === '송금성공' ? '받기' : '송금성공';
+
+			                li.innerHTML = `
+			                    <p style="color:#999">${history.transferDate.replace("T", " ")}</p>
+			                    <p><span>${statusText}</span> | ${history.senderId || ''}</p>
+								<p>사유 : <span>${history.memo}</span></p>
+			                    <strong>${icon} ${history.amount.toLocaleString()}원</strong>
+			                    <hr>
+			                `;
+
+				            transferListManager.appendChild(li);
+				        });
+				    } else {
+				        transferListManager.innerHTML = "<li>송금내역이 없습니다.</li>";
+				    }
+				}
+
+		
+		        // 충전 내역 추가
+		        const chargeList = document.getElementById("chargeHistoryList");
+		        chargeList.innerHTML = ""; // 기존 데이터 초기화
+		        if (chargeData && chargeData.length > 0) {
+		            chargeData.forEach(history => {
+		                const li = document.createElement("li");
+		                li.innerHTML = `
+		                    <p style="color:#999">${ history.chargeDate.replace("T", " ")}</p>
+		                    <p><i class="bi bi-plus-circle" style="color: blue"></i> ${history.amount.toLocaleString()}원</p>
+		                    <hr>
+		                `;
+		                chargeList.appendChild(li); 
+		            });
+		        } else {
+		            chargeList.innerHTML = "<li>충전내역이 없습니다.</li>";
+		        }
+		
+		        // 데이터 로드 완료 후 팝업 표시
+		        payListPopup.style.display = "block";
+		        overlay.style.display = "block";
+		
+		    } catch (error) {
+		        console.error("Error fetching pay list:", error);
+		        alert("데이터를 불러오는 중 문제가 발생했습니다.");
+		    }
+		}
+		
+		
+		
+		// 데이터 로드 실행
+		document.getElementById("payList").addEventListener("click", fetchData);
+
+
+		// 팝업 닫기
+		document.getElementById("overlay").addEventListener("click", closePopup);
+		document.getElementById("closePopup").addEventListener("click", closePopup);
+
+		function closePopup() {
+		    document.getElementById("pay_list_popup").style.display = "none";
+		    document.getElementById("overlay").style.display = "none";
+		    document.getElementById("pay_list_popup_wrap").style.display="none";
+		}
+		
+		// 탭전환
+		const tabButtons = document.querySelectorAll('.tab-button');
+		const tabContents = document.querySelectorAll('.tab-content');
+		
+		tabButtons.forEach(button => {
+			button.addEventListener("click", () => {
+				const targettab = button.dataset.tab;
+				
+				tabButtons.forEach(btn => btn.classList.remove("active"));
+				tabContents.forEach(content => content.classList.remove("active"));
+				
+				button.classList.add("active");
+				document.getElementById(targettab).classList.add("active")				
+			});
+		});
+		
+		
+
+		</script>
+
+	</div>
+</div>
+</html>

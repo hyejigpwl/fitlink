@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+	<!-- meta_tag include -->
+
+	<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+	<title>클럽멤버</title>
+
+	<!-- 공통 css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+		integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+	<!-- Linking CSS files -->
+	<link rel="stylesheet" th:href="@{/css/detail_yj.css}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+		integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+	<!-- 공통 js -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+		crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+	<div th:insert="~{layouts/header :: header}"></div>
+	<main class="container my-5">
+		<div id="flashMessage" th:attr="data-message=${message}" style="display: none;"></div>
+		<section>
+			<a th:href="@{/club/club_detail(clubCode=${clubdto.clubCode})}" class="more-link">
+				< 클럽 </a>
+					<div class="d-flex align-items-center">
+						<img th:src="|/view/${clubdto.clubImage1}|" class="rounded-circle me-3" alt="대표이미지1">
+						<div>
+							<h6 th:text="${clubdto.clubName}"></h6>
+							<p class="text-muted mb-0">멤버수 [[${clubdto.memberCount}]] </p>
+						</div>
+					</div>
+		</section>
+		<hr>
+
+		<div class="row">
+			<!-- 			       <div class="col-md-6"> -->
+			<!-- 멤버 목록 -->
+			<section>
+				<div class="d-flex flex-column">
+					<div class="d-flex align-items-center mb-3" th:each="clubmember : ${responseDTO.dtoList}">
+						<!-- 소셜 로그인 사용자(memSocial == 1)이고 프로필 이미지가 있는 경우 -->
+						<th:block
+							th:if="${clubmember.memSocial == true && clubmember.memPicture != null && clubmember.memPicture !=''}">
+							<img th:src="${clubmember.memPicture}" alt="프로필 이미지"
+								onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">
+						</th:block>
+
+						<!-- 일반 사용자(memSocial == 0)이고 프로필 이미지가 있는 경우 -->
+						<th:block
+							th:if="${clubmember.memSocial == false && clubmember.memPicture != null && clubmember.memPicture !=''}">
+							<img th:src="|/view/${clubmember.memPicture}|" alt="프로필 이미지" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">
+						</th:block>
+
+						<!-- 기본 프로필 이미지 -->
+						<th:block th:if="${clubmember.memPicture == null || clubmember.memPicture ==''}">
+							<img src="https://ssl.pstatic.net/static/pwe/address/img_profile.png" alt="기본 프로필 이미지">
+						</th:block>
+						<div>
+							<div class="mb-1 fw-bold clubmem">
+								<span> [[${clubmember.memNickname}]]
+									<span th:if="${clubmember.memId == clubdto.memId}"
+										class="text-warning small">⭐</span>
+								</span>
+								<form action="/club/club_report" method="post" class="report-from"
+									th:if="${clubmember.memId != clubdto.memId}"
+									th:attr="onsubmit='return confirm(\'' + ${clubmember.memNickname} + ' 님을 신고하시겠습니까?\');'"
+									style="display: inline;">
+									<input type="hidden" name="clubCode" th:value="${clubdto.clubCode}" />
+									<input type="hidden" name="memId" th:value="${clubmember.memId}" />
+									<button type="submit" class="btn btn-danger delbtn">
+										<i class="fas fa-bell"></i>
+									</button>
+								</form>
+							</div>
+							<small class="text-muted" th:if="${clubmember.memAddressSet != null}"
+								th:text="${clubmember.memAddressSet}"></small>
+						</div>
+					</div>
+
+					<nav th:if="${!responseDTO.dtoList.isEmpty()}" aria-label="Page navigation" class="mt-3">
+						<ul class="pagination justify-content-center">
+							<li class="page-item" th:classappend="${responseDTO.page == 1} ? 'disabled'">
+								<a class="page-link"
+									th:href="@{'club/club_member'(clubCode=${clubdto.clubCode}, page=${responseDTO.page - 1})}"
+									aria-label="Previous">«</a>
+							</li>
+							<th:block th:each="i : ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+								<li class="page-item" th:classappend="${responseDTO.page == i} ? 'active'">
+									<a class="page-link"
+										th:href="@{'/club/club_member'(clubCode=${param.clubCode},page=${i})}">[[${i}]]</a>
+								</li>
+							</th:block>
+							<li class="page-item" th:classappend="${responseDTO.page == responseDTO.end} ? 'disabled'">
+								<a class="page-link"
+									th:href="@{'/club/club_member'(clubCode=${param.clubCode}, page=${responseDTO.page + 1})}"
+									aria-label="Next">»</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<div th:insert="~{layouts/footer :: footer}"></div>
+</body>
+<script>
+	const flashMessage = document.getElementById("flashMessage");
+	if (flashMessage) {
+		const message = flashMessage.getAttribute("data-message");
+		if (message) {
+			alert(message);
+		}
+	}
+
+	const report = 0;
+
+</script>
+
+</html>

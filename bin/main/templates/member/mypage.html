@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+<!-- meta_tag include -->
+<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+<title>나의정보</title>
+
+<!-- 공통 css -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+	integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/common.css}">
+
+<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+<!-- Linking CSS files -->
+<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+
+<!-- 공통 js -->
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+	crossorigin="anonymous"></script>
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript"
+	src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+
+</head>
+
+<body>
+
+	<th:block th:if="${member.memIsmanager == true}">
+		<div th:insert="~{layouts/admin_header :: admin_header}"></div>
+	</th:block>
+
+	<th:block th:if="${member.memIsmanager == false}">
+		<div th:insert="~{layouts/header :: header}"></div>
+	</th:block>
+
+
+
+	<main class="main container" id="mypage_pg">
+		<div class="sidebar">
+			<div class="header">
+				<h2 style="font-size: 20px;">마이페이지</h2>
+				<!-- <button class="btn btn-danger" onclick="location.href='/member/logout'">로그아웃</button> -->
+			</div>
+
+			<div class="btn_wrap">
+				<div class="header" th:if="${member.memIsmanager == false}">
+					<a href="/member/mypage" class="active">나의정보</a> 
+					<a href="/member/reservation">나의시설예약</a> 
+					<a href="/member/member_planner">운동캘린더</a>
+					<a href="/member/club_myclub">나의클럽관리</a> 
+					<a href="/member/club_joinclub">가입한클럽</a>
+				</div>
+				
+				<div class="header" th:if="${member.memIsmanager == true}">
+					<a href="/member/mypage" class="active">나의정보</a>
+				</div>
+
+				
+				
+				<div style="align-items: center;">
+					<div
+						style="cursor: pointer; display: inline-flex; gap: 5px; margin: 10px 0; justify-content: space-between; width: 100%;">
+						<p style="font-size: 16px; font-weight: bold; margin: 0;">FITPAY</p>
+						<p
+							style="font-size: 16px; font-weight: bold; color: #333; margin: 0;">
+							<span th:text="${#numbers.formatInteger(#authentication.principal.memMoney, 0, 'COMMA')}" id="memMoney"></span>원 
+								<input type="number" id="memMoney_ip"
+								name="memMoney" class="blind">
+						</p>
+					</div>
+					<div style="display: inline-flex; gap: 5px; width: 100%">
+						<button class="btn btn-primary" id="fitpayCharge"
+							style="width: 50%">충전</button>
+						<button class="btn btn-success" id="payList" style="width: 50%">내역</button>
+					</div>
+				</div>
+			</div>
+
+			<div th:insert="~{layouts/charge_popup :: charge_popup}"></div>
+			<div th:insert="~{layouts/pay_list :: pay_list}"></div>
+
+
+		</div>
+
+		<div class="main">
+			<div class="header">
+				<div class="profile-section">
+					<!-- <img src="https://via.placeholder.com/80" alt="Profile Picture"> -->
+
+					<!-- 소셜 로그인 사용자(memSocial == 1)이고 프로필 이미지가 있는 경우 -->
+					<th:block
+						th:if="${member.memSocial == true && member.memPicture != null && member.memPicture !=''}">
+						<img th:src="${member.memPicture}"
+							alt="프로필 이미지" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">
+					</th:block>
+
+					<!-- 일반 사용자(memSocial == 0)이고 프로필 이미지가 있는 경우 -->
+					<th:block
+						th:if="${member.memSocial == false && member.memPicture != null && member.memPicture !=''}" >
+						<img th:src="|/view/${member.memPicture}|" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'"
+							alt="프로필 이미지">
+					</th:block>
+
+					<!-- 기본 프로필 이미지 -->
+					<th:block
+						th:if="${member.memPicture == null || member.memPicture ==''}">
+						<img
+							src="https://ssl.pstatic.net/static/pwe/address/img_profile.png"
+							alt="기본 프로필 이미지">
+					</th:block>
+
+					<div style="text-align: center">
+
+						<h3 th:text="${#authentication.principal.memNickname}"></h3>
+						<p th:text="${#authentication.principal.memIntroduction}"
+							style="font-size: 13px; color: #999;"></p>
+					</div>
+
+					<div class="flex" style="gap: 5px; margin-bottom: 20px;">
+
+						<button class="btn btn-primary"
+							onclick="location.href='/member/mypage_modify'"
+							style="font-size: 11px;">수정하기</button>
+						<button class="btn btn-danger"
+							onclick="location.href='/member/logout'" style="font-size: 11px;">로그아웃</button>
+					</div>
+
+
+					<div class="flex myinfo_wrap" style="margin-bottom: 30px;">
+						<div
+							th:if="${#authentication.principal.memExercise != null and #authentication.principal.memExercise.EXERCISE_NAME != null}">
+							<p>⚽ 좋아하는 운동</p>
+							<p
+								th:text="${#authentication.principal.memExercise.EXERCISE_NAME}"></p>
+						</div>
+						<div
+							th:if="${#authentication.principal.memExercise == null or #authentication.principal.memExercise.EXERCISE_NAME == null}">
+							<p>⚽ 좋아하는 운동</p>
+							<p>-선택필요-</p>
+						</div>
+
+						<div
+							th:if="${#authentication.principal.memClub != null and #authentication.principal.memClub.EXERCISE_NAME != null}">
+							<p>💖 관심있는 클럽</p>
+							<p th:text="${#authentication.principal.memClub.EXERCISE_NAME}"></p>
+						</div>
+						<div
+							th:if="${#authentication.principal.memClub == null or #authentication.principal.memClub.EXERCISE_NAME == null}">
+							<p>💖 관심있는 클럽</p>
+							<p>-선택필요-</p>
+						</div>
+
+						<div
+							th:if="${member.memBirthday!=null && member.memBirthday!=''}">
+							<p>🎂 생일</p>
+							<p th:text="${member.memBirthday}"></p>
+						</div>
+						<div
+							th:if="${member.memBirthday==null || member.memBirthday==''}">
+							<p>🎂 생일</p>
+							<p>-선택필요-</p>
+						</div>
+
+						<div>
+							<p>📧 이메일</p>
+							<p th:text="${#authentication.principal.memEmail}"></p>
+						</div>
+					</div>
+
+
+				</div>
+
+			</div>
+
+			<div class="feed-container" style="margin-top: 30px;">
+				<!-- Repeat this block 30 times for a 3x10 grid -->
+				
+				<!-- Repeat ends here -->
+			</div>
+		</div>
+	</main>
+
+	<div th:insert="~{layouts/footer :: footer}"></div>
+</body>
+<script th:if="${message}">
+    alert("[[${message}]]");
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/gd.js"></script>
+<script th:inline="javascript">
+	const feedContainer = document.querySelector(".feed-container");
+	const memId = /*[[${#authentication.principal.memNickname}]]*/"";
+	
+	async function getBoardListByMemId() {
+		const response = await axios.get('/club/getBoardListByMemID')
+		return response.data;
+	}
+
+	function printBoardList() {
+		getBoardListByMemId().then(data => {
+			console.log(data);
+			data.forEach(dto => {
+				let str = `<div class="feed-item" onclick='location.href="/club/club_board_read?clubCode=${dto.club_CODE}&boardNo=${dto.board_NO}"'>
+					<div class="feed-header">
+						<div class="user-profile">
+							<p class="memNickname mb-1">${dto.board_TYPE}</p>
+						</div>
+					</div>
+					<div class="feed-main">
+						<img class="boardImg" src="/club/view/${dto.fileNames[0]}" onerror="this.src='/img/free-icon-no-picture-12048953.png'">
+					</div>
+					<div class="feed-content">
+						<span class="boardText">${dto.board_TEXT}</span>
+					</div>
+					</div>`
+
+				feedContainer.innerHTML += str;
+			});
+		})
+	}
+
+	printBoardList();
+
+	
+
+</script>
+
+</html>

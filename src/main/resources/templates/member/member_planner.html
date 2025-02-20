@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+
+	<title>운동캘린더</title>
+	<link rel="icon" th:href="@{/img/fitlink.png}" type="image/png" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+		integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+		crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+	<style>
+		/* 팝업 스타일 */
+		.popup {
+			display: none;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: white;
+			padding: 20px;
+			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+			border-radius: 8px;
+			width: 400px;
+			z-index: 10;
+		}
+
+		.popup h3 {
+			margin-top: 0;
+			font-size: 20px;
+		}
+
+		.popup .close {
+			cursor: pointer;
+			float: right;
+			color: red;
+			font-weight: bold;
+		}
+
+		.popup .event-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.popup .event-list li {
+			margin: 5px 0;
+			padding: 5px;
+			background: #f1f1f1;
+			cursor: pointer;
+		}
+
+		.popup .event-list li.completed {
+			text-decoration: line-through;
+			/* 일정 완료 시 밑줄 */
+			color: gray;
+		}
+
+		.popup button {
+			margin-top: 10px;
+			width: 100%;
+		}
+
+		.fc-direction-ltr {
+			direction: ltr;
+			text-align: left;
+			width: 100%;
+			min-width: 1000px;
+			min-height: 600px;
+		}
+	</style>
+
+</head>
+
+<body>
+	<!-- 로딩 화면 -->
+	<div id="loadingOverlay">
+		<div class="spinner"></div>
+		<p>일정을 불러오는 중...</p>
+	</div>
+
+	<div th:insert="~{layouts/header :: header}"></div>
+
+	<main class="main container" id="mypage_pg">
+		<div class="sidebar">
+			<div class="header">
+				<h2 style="font-size: 20px;">마이페이지</h2>
+				<!-- <button class="btn btn-danger" onclick="location.href='/member/logout'">로그아웃</button> -->
+			</div>
+
+			<div class="btn_wrap">
+				<div class="header" th:if="${member.memIsmanager == false}">
+					<a href="/member/mypage">나의정보</a> <a href="/member/reservation">나의시설예약</a>
+					<a href="/member/member_planner" class="active">운동캘린더</a> <a href="/member/club_myclub">나의클럽관리</a>
+					<a href="/member/club_joinclub">가입한클럽</a>
+				</div>
+
+				<div class="header" th:if="${member.memIsmanager == true}">
+					<a href="/member/mypage" class="active">나의정보</a>
+				</div>
+
+
+
+				<div style="align-items: center;">
+					<div
+						style="cursor: pointer; display: inline-flex; gap: 5px; margin: 10px 0; justify-content: space-between; width: 100%;">
+						<p style="font-size: 16px; font-weight: bold; margin: 0;">FITPAY</p>
+						<p style="font-size: 16px; font-weight: bold; color: #333; margin: 0;">
+							<span th:text="${#numbers.formatInteger(#authentication.principal.memMoney, 0, 'COMMA')}"
+								id="memMoney"></span>원
+							<input type="number" id="memMoney_ip" name="memMoney" class="blind">
+						</p>
+					</div>
+					<div style="display: inline-flex; gap: 5px; width: 100%">
+						<button class="btn btn-primary" id="fitpayCharge" style="width: 50%">충전</button>
+						<button class="btn btn-success" id="payList" style="width: 50%">내역</button>
+					</div>
+				</div>
+			</div>
+
+			<div th:insert="~{layouts/charge_popup :: charge_popup}"></div>
+			<div th:insert="~{layouts/pay_list :: pay_list}"></div>
+
+
+		</div>
+		<div class="main">
+			<h2 class="blind">운동 캘린더</h2>
+			<div style="padding: 10px;
+			background-color: #f6f6f6;
+			margin-bottom: 30px;
+			font-size: 13px;
+			border-radius: 10px;">
+				<p>* 운동캘린더에서 [시설예약] 일정을 삭제할 경우, 시설예약이 자동으로 취소됩니다.</p>
+				<p>* 운동캘린더에서 [클럽] 일정을 삭제할 경우, 해당 일정 참가가 자동으로 취소됩니다.</p>
+			</div>
+			<div id="calendar"></div>
+		</div>
+
+
+		<!-- 일정 목록 팝업 -->
+		<div id="eventPopup" class="popup">
+			<span class="close" onclick="closePopup()">X</span>
+			<h3 id="popupDate"></h3>
+			<ul id="eventList" class="event-list"></ul>
+			<button onclick="addEventPopup()" class="btn btn-primary">+ 일정 추가</button>
+		</div>
+
+		<!-- 일정 추가 팝업 -->
+		<div id="eventAddPopup" class="popup">
+			<div class="popup-content">
+				<span class="close" onclick="closeAddPopup()">X</span>
+				<h3>일정 추가</h3>
+				<input type="hidden" id="popupMemId" value="">
+				<p id="popupDateDisplay"></p>
+				<p><label style="margin-top:10px;">제목:</label> <input type="text" class="form-control"
+						id="popupPlanName" placeholder="일정 제목 입력"> </p>
+				<p><label style="margin-top:10px;">내용:</label>
+					<textarea id="popupPlanText" class="form-control" placeholder="일정 내용을 입력하세요"></textarea>
+				</p>
+				<div class="popup-buttons">
+					<button onclick="addEvent()" class="btn btn-primary">등록</button>
+					<!-- <button onclick="closeAddPopup()" class="btn btn-secondary">취소</button> -->
+				</div>
+			</div>
+		</div>
+
+
+		<!-- 일정 상세보기 팝업 -->
+		<div id="eventDetailPopup" class="popup">
+			<span class="close" onclick="closeDetailPopup()">X</span>
+			<h3 id="detailTitle"></h3>
+			<p id="detailContent"></p>
+
+			<div class="popup-buttons">
+				<button id="listEventButton" class="btn btn-primary">목록 보기</button>
+				<!-- <button id="completeEventButton">일정 완료</button> -->
+				<button id="deleteEventButton" class="btn btn-danger">삭제</button>
+			</div>
+		</div>
+	</main>
+
+	<div th:insert="~{layouts/footer :: footer}"></div>
+	<!-- 로그인한 사용자의 ID를 숨겨진 입력 필드로 저장 -->
+	<input type="hidden" id="loggedInMemId" th:value="${#authentication.principal.memId}">
+
+
+	<script th:inline="javascript">
+		
+		document.addEventListener('DOMContentLoaded', function () {
+
+			/* 시설 예약 성공 메시지 */
+			let result = /*[[${result}]]*/ null;
+			if (result) {
+				alert(result);
+			}
+
+			/* 예약 취소 성공 메시지 */
+			let cancelResult = /*[[${cancelResult}]]*/ null;
+			if (cancelResult) {
+				alert(cancelResult);
+			}
+
+
+			let calendarEl = document.getElementById('calendar');
+			let memId = document.getElementById("loggedInMemId").value; // 로그인한 사용자 ID 가져오기
+
+			let calendar = new FullCalendar.Calendar(calendarEl, {
+				initialView: 'dayGridMonth',
+				events: function (fetchInfo, successCallback, failureCallback) {
+					fetch(`/planner/list?memId=` + encodeURIComponent(memId))  // ✅ `/list` API로 변경
+						.then(response => {
+							if (!response.ok) {
+								throw new Error("서버 응답 오류: " + response.status);
+							}
+							return response.json();
+						})
+						.then(events => {
+							console.log("📌 불러온 일정 데이터:", events); // ✅ 데이터 확인용 로그 추가
+							let formattedEvents = events.map(event => ({
+								id: event.id,  // `id` 키가 맞는지 확인
+								title: event.title, // ✅ 일정 제목이 날짜 칸에 표시됨
+								start: event.start, // ✅ FullCalendar에서 날짜 인식 확인
+								color: event.color,
+								extendedProps: {
+									planText: event.planText,
+									planIschk: event.planIschk,
+									planNo: event.planNo,  // ✅ 상세정보에서 사용될 `planNo`
+									memId: event.memId,      // ✅ 사용자 ID 추가 (필요시)
+									reservationCode: event.reservationCode,
+									clubCode: event.clubCode
+								}
+
+							}));
+							console.log("📌 변환된 이벤트 데이터:", formattedEvents); // ✅ 변환된 데이터 확인
+							successCallback(formattedEvents);
+							// ✅ 모든 데이터가 로드된 후 로딩 화면 숨기기
+							document.getElementById("loadingOverlay").style.display = "none";
+
+						})
+						.catch(error => {
+							console.error("🚨 이벤트 로딩 오류:", error);
+							failureCallback(error);
+						});
+				},
+				dateClick: function (info) {
+					openPopup(info.dateStr);
+				},
+				eventClick: function (info) {
+					console.log("📌 클릭한 이벤트 데이터:", info.event);
+
+					// 한국(KST) 기준 날짜 변환
+					let localDate = new Date(info.event.start);
+					let planDate = localDate.toISOString().split("T")[0]; // ✅ 기존 방식 (UTC 날짜)
+					let correctedPlanDate = localDate.toLocaleDateString('ko-KR', {
+						year: 'numeric',
+						month: '2-digit',
+						day: '2-digit'
+					}).replace(/\. /g, '-').replace('.', ''); // ✅ KST 기준으로 날짜 변환
+
+					let selectedEvent = {
+						planNo: info.event.id,
+						planName: info.event.title,
+						planDate: correctedPlanDate,
+						planText: info.event.extendedProps.planText,
+						planIschk: info.event.extendedProps.planIschk,
+						reservationCode: info.event.extendedProps.reservationCode, // ✅ 추가
+						clubCode: info.event.extendedProps.clubCode, // ✅ 추가
+						memId: info.event.extendedProps.memId // ✅ 추가
+					};
+
+
+					console.log("📌 변환된 이벤트 데이터:", selectedEvent);
+					showDetail(selectedEvent);
+				}
+
+
+
+
+
+			});
+
+			calendar.render();
+		});
+
+
+		//📌 일정 목록 팝업 열기 (날짜 클릭 시)
+		function openPopup(date) {
+			document.getElementById("popupDate").innerText = `📅 ${date} 일정`;
+			document.getElementById("eventList").innerHTML = "";
+
+			let memId = document.getElementById("loggedInMemId").value; // 로그인한 사용자 ID 가져오기
+			let planDate = date;
+
+			fetch(`/planner/date?memId=${encodeURIComponent(memId)}&planDate=${planDate}`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("서버 응답 오류: " + response.status);
+					}
+					return response.json();
+				})
+				.then(events => {
+					let eventList = document.getElementById("eventList");
+					eventList.innerHTML = ""; // 기존 목록 초기화
+
+					events.forEach(event => {
+						let li = document.createElement("li");
+						li.setAttribute("data-planNo", event.planNo); // 📌 일정 ID 저장
+						li.classList.add("event-item"); // ✅ 클래스 추가 (이벤트 바인딩을 위해)
+
+						// 📌 체크박스 추가
+						let checkbox = document.createElement("input");
+						checkbox.type = "checkbox";
+						checkbox.checked = event.planIschk; // 일정 완료 여부 반영
+						checkbox.classList.add("event-checkbox"); // ✅ 체크박스 클래스 추가
+						checkbox.style.marginRight = "10px";
+
+						// 📌 일정 제목 추가
+						let span = document.createElement("span");
+						span.innerText = event.planName;
+
+						// ✅ 체크박스와 제목을 li에 추가
+						li.appendChild(checkbox);
+						li.appendChild(span);
+
+						// ✅ 완료된 일정에 밑줄 추가
+						if (event.planIschk) {
+							li.classList.add("completed");
+						} else {
+							li.classList.remove("completed");
+						}
+
+						// ✅ 📌 `li` 클릭 시 showDetail() 실행 (이벤트 리스너 추가)
+						li.addEventListener("click", function (e) {
+							// 체크박스를 클릭한 경우 `showDetail()` 실행 X
+							if (e.target.tagName.toLowerCase() === "input") return;
+							showDetail(event);
+						});
+						eventList.appendChild(li);
+
+					});
+				})
+				.catch(error => {
+					console.error("데이터 불러오기 오류:", error);
+					alert(`일정을 불러오는 중 오류가 발생했습니다: ${error.message}`);
+				});
+
+			document.getElementById("eventPopup").style.display = "block";
+		}
+
+		// 📌 일정 완료 상태 업데이트 (서버에 저장)
+		function toggleCompletion(planNo, isChecked) {
+			console.log(`✅ 서버에 전달: 일정 ${planNo}, 완료 상태: ${isChecked}`); // ✅ 디버깅 로그 추가
+			$.ajax({
+				type: "PUT",
+				url: "/planner/updateIschk",
+				contentType: "application/json",
+				data: JSON.stringify({
+					planNo: planNo,
+					planIschk: isChecked // 체크 여부에 따라 true/false 업데이트
+				}),
+				success: function () {
+					console.log(`✅ 일정 (${planNo}) 완료 상태 서버 반영 완료: ${isChecked}`);
+				},
+				error: function () {
+					alert("일정 완료 상태 변경 중 오류가 발생했습니다.");
+				}
+			});
+		}
+
+		// ✅ 체크박스 클릭 시 일정 완료 상태 변경 (이벤트 위임 방식)
+		$(document).on("change", ".event-checkbox", function () {
+			let listItem = $(this).closest(".event-item"); // 체크박스가 속한 li 가져오기
+			let planNo = listItem.attr("data-planNo"); // 일정 번호 가져오기
+			let isChecked = $(this).prop("checked"); // 체크 여부 가져오기
+
+			console.log(`📌 체크박스 클릭: 일정 ${planNo}, 상태: ${isChecked}`); // ✅ 디버깅 로그 추가
+
+			// ✅ 체크박스 상태에 따라 완료/해제 스타일 적용
+			if (isChecked) {
+				listItem.addClass("completed");
+			} else {
+				listItem.removeClass("completed");
+			}
+
+			// ✅ 서버에 완료 상태 업데이트
+			toggleCompletion(planNo, isChecked);
+		});
+
+
+		// 일정 추가 팝업 열기
+		function addEventPopup() {
+			let memId = document.getElementById("loggedInMemId").value;
+			let planDate = document.getElementById("popupDate").innerText.replace("📅 ", "").replace(" 일정", "");
+
+			document.getElementById("popupMemId").value = memId;
+			document.getElementById("popupDateDisplay").innerText = "날짜: " + planDate;
+			document.getElementById("popupPlanName").value = "";
+			document.getElementById("popupPlanText").value = "";
+
+			document.getElementById("eventAddPopup").style.display = "block";
+		}
+
+		// 팝업 닫기
+		function closeAddPopup() {
+			document.getElementById("eventAddPopup").style.display = "none";
+		}
+
+
+
+		// 일정 추가 AJAX 요청
+		function addEvent() {
+			let memId = document.getElementById("popupMemId").value;
+			let planDate = document.getElementById("popupDate").innerText.replace("📅 ", "").replace(" 일정", "");
+			let planName = document.getElementById("popupPlanName").value;
+			let planText = document.getElementById("popupPlanText").value;
+
+			if (planName.trim() === "") {
+				alert("일정 제목을 입력하세요.");
+				return;
+			}
+
+			$.ajax({
+				type: "POST",
+				url: "/planner/add",
+				contentType: "application/json",
+				data: JSON.stringify({
+					memId: memId,
+					planDate: planDate,
+					planName: planName,
+					planText: planText,
+					// color: event.color,
+					planIschk: false
+				}),
+				success: function () {
+					alert("일정이 추가되었습니다!");
+					closePopup(); // 팝업 닫기
+					location.reload(); // 새로고침
+				}
+			});
+		};
+
+		// 클럽일정 가져오기
+		/* function convertReservationsToPlans() {
+		let memId = document.getElementById("popupMemId").value; // 현재 로그인한 사용자 ID
+	
+		$.ajax({
+			type: "POST",
+			url: "/planner/convertReservations",
+			data: { memId: memId },
+			success: function (response) {
+				alert(response); // 성공 메시지 출력
+				// location.reload(); // 새로고침
+			},
+			error: function (xhr, status, error) {
+				alert("오류 발생: " + xhr.responseText);
+			}
+		});
+	};
+	
+	window.onload = function () {
+		convertReservationsToPlans();
+	}; */
+
+
+
+		// 일정 상세 보기
+		let selectedEvent = {}; // ✅ 전역 변수 선언
+
+		function showDetail(event) {
+			selectedEvent = event; // ✅ 전역 변수에 event 데이터 저장
+
+			document.getElementById("detailTitle").innerText = event.planName;
+			document.getElementById("detailContent").innerText = event.planText;
+
+			document.getElementById("deleteEventButton").onclick = function () {
+				console.log(selectedEvent.planNo, selectedEvent.reservationCode, selectedEvent.clubCode, selectedEvent.memId);
+				deleteEvent(selectedEvent.planNo, selectedEvent.reservationCode, selectedEvent.clubCode, selectedEvent.memId);
+			};
+
+			document.getElementById("eventDetailPopup").style.display = "block";
+
+			document.getElementById("listEventButton").onclick = function () {
+				console.log("📌 목록 보기 버튼 클릭 - 해당 날짜:", event.planDate);
+				closeDetailPopup();
+				openPopup(event.planDate);
+			};
+		}
+
+
+		// 일정 완료 처리
+		/* function completeEvent(planNo) {
+			$.ajax({
+				type: "PUT",
+				url: "/planner/updateIschk",
+				contentType: "application/json",
+				data: JSON.stringify({
+					planNo: planNo,
+					planIschk: true
+				}),
+				success: function () {
+					alert("운동 일정이 완료되었습니다!");
+					let listItem = document.querySelector(`[data-planNo='${planNo}']`);
+					if (listItem) {
+						listItem.classList.add("completed"); // 밑줄 추가
+					}
+					closeDetailPopup();
+				}
+			});
+		} */
+
+		// DELETE 요청을 body에 데이터 포함해서 보내기
+		function deleteEvent(planNo, reservationCode, clubCode, memId) {
+			if (confirm("정말 삭제하시겠습니까?")) {
+				$.ajax({
+					type: "DELETE",
+					url: "/planner/delete",
+					contentType: "application/json",
+					data: JSON.stringify({
+						planNo: Number(planNo),  // ✅ 숫자로 변환 후 전송
+						reservationCode: reservationCode,
+						clubCode: clubCode,
+						memId: memId
+					}),
+					success: function () {
+						alert("일정이 삭제되었습니다!");
+						location.reload();
+					},
+					error: function (xhr) {
+						alert("🚨 삭제 실패: " + xhr.responseText);
+					}
+				});
+
+			}
+		}
+
+
+		// 팝업 닫기
+		function closePopup() {
+			document.getElementById("eventPopup").style.display = "none";
+		}
+
+		function closeDetailPopup() {
+			document.getElementById("eventDetailPopup").style.display = "none";
+		}
+	</script>
+
+</body>
+
+</html>

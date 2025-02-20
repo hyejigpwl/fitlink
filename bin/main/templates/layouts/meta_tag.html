@@ -1,0 +1,44 @@
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headMeta">
+	<meta charSet="utf-8" />
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+	
+	<!--favicion -->
+	<link rel="icon" th:href="@{/img/fitlink.png}"
+		type="image/png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!-- 다크모드 설 -->
+	<!-- <script>
+	    (() => {
+	        document.documentElement.dataset.seed = "";
+	        var d = window.matchMedia("(prefers-color-scheme: dark)"),
+	            a = () => {
+	                document.documentElement.dataset.seedScaleColor = d.matches ? "dark" : "light"
+	            };
+	        "addEventListener" in d ? d.addEventListener("change", a) : "addListener" in d && d.addListener(a),
+	        a()
+	    })();
+	    </script> -->
+	
+	<!-- 메타데이터 (페이지 오픈하기 전에 설정하기) -->
+	<meta property="og:site_name" content="fitlink" />
+	<meta property="og:locale" content="ko-KR" />
+	<meta property="og:title" content="fitlink" />
+	<meta name="twitter:title" content="fitlink" />
+	<meta name="description"
+		content="FITLINK, 시설예약과 운동메이트 찾기를 한 곳에서!" />
+	<meta property="og:description"
+		content="FITLINK, 시설예약과 운동메이트 찾기를 한 곳에서!" />
+	<meta name="twitter:description"
+		content="FITLINK, 시설예약과 운동메이트 찾기를 한 곳에서!" />
+	<meta property="og:image"
+		th:content="@{/img/fitlink_favicon.png}" />
+	<meta name="twitter:image"
+		th:content="@{/img/fitlink_favicon.png}"/>
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta property="og:type" content="website" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+</html>

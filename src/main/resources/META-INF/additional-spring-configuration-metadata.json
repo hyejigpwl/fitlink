@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "WeatherData.admin.Id",
+  "type": "java.lang.String",
+  "description": "A description for 'WeatherData.admin.Id'"
+}]}

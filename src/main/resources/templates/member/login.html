@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+<!-- meta_tag include -->
+<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+<title>로그인</title>
+
+<!-- 공통 css -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+	integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<!-- Linking CSS files -->
+<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+	crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+
+<body class="login_pg_body">
+	<main class="container" id="login_pg">
+		<!-- 회원가입 START -->
+		<div class="form-container sign-up-container">
+			<form id="registerForm" action="/member/join" method="post">
+				<h1>회원가입</h1>
+				<!--<div class="social-container">
+					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a> <a href="#" class="social"><i
+							class="fab fa-google-plus-g"></i></a> <a href="#" class="social"><i
+							class="fab fa-linkedin-in"></i></a>
+				</div>
+				<span>or use your email for registration</span> -->
+				<!-- MEM_ID -->
+				<label class="col-form-label mt-2" for="memId"><span
+					class="text-danger">*</span> 아이디</label> <input type="text"
+					class="form-control" placeholder="아이디" id="memId" name="memId"
+					required style="display: inline-block; width: 50%;" maxlength="20">
+				<button type="button" id="checkIdButton" class="btn btn-primary">중복확인</button>
+				<small class="text-muted" style="display: block;">아이디는
+					5~20자의 영문자, 숫자, 밑줄(_)만 사용할 수 있습니다.</small>
+
+
+
+				<!-- MEM_PW -->
+				<label class="col-form-label mt-2" for="memPw"><span
+					class="text-danger">*</span> 비밀번호</label> <input type="password"
+					id="memPw" name="memPw" placeholder="비밀번호" class="form-control"
+					required /> <small class="text-muted">비밀번호는 최소 8자 이상, 하나의
+					문자, 숫자, 특수문자를 포함해야 합니다.</small>
+
+				<!-- MEM_PW_CK -->
+				<label class="col-form-label mt-2" for="memPwCk"><span
+					class="text-danger">*</span> 비밀번호 확인</label> <input type="password"
+					id="memPwCk" name="memPwCk" placeholder="비밀번호 확인"
+					class="form-control" required /> <small class="text-danger">비밀번호와
+					비밀번호 확인이 일치해야 합니다.</small>
+
+				<!-- MEM_NAME -->
+				<label class="col-form-label mt-2" for="memName"><span
+					class="text-danger">*</span> 이름</label> <input type="text" id="memName"
+					name="memName" class="form-control" placeholder="이름" required maxlength="5"/>
+				<small class="text-danger">이름은 2~5자의 한글 또는 영문이어야 합니다.</small>
+
+
+				<!-- MEM_NICKNAME -->
+				<label class="col-form-label mt-2" for="memNickname"><span
+					class="text-danger">*</span> 닉네임</label> <input type="text"
+					id="memNickname" name="memNickname" class="form-control"
+					placeholder="닉네임" required maxlength="10"/> <small class="text-muted">닉네임은
+					2~10자의 한글, 영문, 숫자만 사용할 수 있습니다.</small>
+
+
+				<!-- MEM_EXERCISE (Select Buttons) -->
+				<label for="memExercise" class="col-form-label mt-2">선호하는
+					운동</label> <select class="form-select" id="memExercise"
+					name="memExercise">
+					<option value="">=== 선택 ===</option>
+					<option value="EXE_FOOTBALL">축구</option>
+					<option value="EXE_BASKET">농구</option>
+					<option value="EXE_BASEBALL">야구</option>
+					<option value="EXE_BADMINTON">배드민턴</option>
+					<option value="EXE_TENNIS">테니스</option>
+					<option value="EXE_FUTSAL">풋살</option>
+					<option value="EXE_FITNESS">헬스</option>
+					<option value="EXE_PILATES">필라테스</option>
+					<option value="EXE_YOGA">요가</option>
+					<option value="EXE_CLIMB">암벽등반</option>
+					<option value="EXE_MOUNT">등산</option>
+				</select>
+
+				<!-- MEM_CLUB (Select Buttons) -->
+				<label for="memClub" class="col-form-label mt-2">선호하는 클럽</label> <select
+					class="form-select" id="memClub" name="memClub">
+					<option value="">=== 선택 ===</option>
+					<option value="THM_SPORTCLUB">운동클럽</option>
+					<option value="THM_CONTEST">대회준비</option>
+					<option value="THM_BODYPROFILE">바디프로필</option>
+					<option value="THM_RECOVER">부상/재활</option>
+					<option value="THM_FOOD">영양제/식단</option>
+					<option value="THM_SPORTJOURNAL">운동일지</option>
+					<option value="THM_EXAM">입시준비</option>
+					<option value="THM_DIET">체중감량</option>
+					<option value="THM_FITNESS">헬스</option>
+				</select>
+				<!-- <div class="form-check">
+					<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+					<label class="form-check-label" for="flexCheckDefault">
+						운동클럽
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+					<label class="form-check-label" for="flexCheckChecked">
+						다이어트
+					</label>
+				</div> -->
+
+
+				<!-- MEM_PICTURE (File Input) -->
+				<!-- <label for="memPicture" style="width: 100%" class="mt-2">프로필
+					사진</label> <input type="file" id="memPicture" name="memPicture"
+					accept="image/*" class="form-control" /> -->
+
+				<!-- MEM_INTRODUCTION -->
+				<label for="memIntroduction" class="mt-2">자기소개</label>
+				<textarea id="memIntroduction" name="memIntroduction" rows="4"
+					cols="50" maxlength="100" class="form-control"></textarea>
+
+				<!-- MEM_GENDER (Radio Buttons) -->
+				<label class="mt-2"><span class="text-danger">*</span> 성별</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" id="male"
+						name="memGender" value="true" checked /> <label
+						class="form-check-label" for="male">남성</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" id="female"
+						name="memGender" value="false" /> <label
+						class="form-check-label" for="female">여성</label>
+				</div>
+
+				<!-- MEM_TELL -->
+				<label for="memTell" class="mt-2"><span class="text-danger">*</span>
+					전화번호</label> <input type="tel" id="memTell" name="memTell"
+					placeholder="ex.01012345678" maxlength="11" required
+					class="form-control" /> <small class="text-danger">전화번호는
+					010으로 시작하며, 숫자 11자리여야 합니다.</small>
+
+				<!-- MEM_EMAIL -->
+				<label for="memEmail" class="mt-2"><span
+					class="text-danger">*</span> 이메일</label> <input type="email" id="memEmail"
+					name="memEmail" required class="form-control"
+					placeholder="ex.hehe@gmail.com" /> <small class="text-danger">유효한
+					이메일 주소를 입력해주세요.</small>
+
+				<!-- MEM_BIRTHDAY -->
+				<label for="memBirthday" class="mt-2">생년월일</label> <input
+					type="date" id="memBirthday" name="memBirthday"
+					class="form-control" />
+
+				<!-- MEM_ZIPCODE -->
+				<label for="memZipcode" class="mt-2"><span
+					class="text-danger">*</span> 우편번호</label> <input type="text"
+					id="memZipcode" name="memZipcode" required class="form-control"
+					style="display: inline-block; width: 50%;" />
+				<button type="button" class="btn btn-primary"
+					onclick="searchPostCode()">우편번호 찾기</button>
+
+				<!-- MEM_ADDRESS -->
+				<label for="memAddress" class="mt-2"><span
+					class="text-danger">*</span> 주소</label> <input type="text" id="memAddress"
+					name="memAddress" required class="form-control" /> <small
+					class="text-danger">주소를 입력해주세요.</small>
+
+				<!-- MEM_ADDRESS_DETAIL -->
+				<label for="memAddressDetail" class="mt-2"><span
+					class="text-danger">*</span> 상세 주소</label> <input type="text"
+					id="memAddressDetail" name="memAddressDetail" required
+					class="form-control" /> <small class="text-danger">상세 주소를
+					입력해주세요.</small>
+
+
+
+				<!-- MEM_ISMANAGER (Radio Buttons) -->
+				<label class="mt-2">관리자 여부</label>
+				<div class="form-check">
+					<input type="radio" id="managerYes" name="memIsmanager"
+						value="true" class="form-check-input" /> <label for="managerYes"
+						class="form-check-label">예</label>
+				</div>
+				<div class="form-check">
+					<input type="radio" id="managerNo" name="memIsmanager"
+						value="false" class="form-check-input" checked /> <label
+						for="managerNo" class="form-check-label">아니오</label>
+				</div>
+				<button type="submit" class="btn btn-primary">회원가입</button>
+			</form>
+		</div>
+		<!-- 회원가입 START -->
+
+		<!-- 로그인 START -->
+		<div class="form-container sign-in-container">
+			<form id="loginForm" action="/member/login" method="post">
+				<h1 onclick="location.href='/'" style="cursor: pointer">FITLINK</h1>
+				<div class="social-container">
+					<a href="/oauth2/authorization/naver" class="social"><img src="/img/social_naver.png"
+						alt="네이버로 로그인"></a> 
+						<a href="/oauth2/authorization/kakao" class="social"><img
+						src="/img/social_kakao.png" alt="카카오로 로그인"></a> 
+						<a href="/oauth2/authorization/google"
+						class="social"><img src="/img/social_google.png" alt="구글로 로그인"></a>
+				</div>
+				<!--<span>or use your account</span> -->
+				<input type="text" placeholder="아이디" name="username"
+					class="form-control" /> <input type="password" name="password"
+					placeholder="비밀번호" class="form-control" /> <a href="/member/find_pw">비밀번호
+					찾기</a>
+				<button type="submit" class="btn btn-primary">로그인</button>
+			</form>
+		</div>
+		<div class="overlay-container">
+			<div class="overlay">
+				<div class="overlay-panel overlay-left">
+					<h1>환영합니다!</h1>
+					<p>계정을 생성하고, 동네친구들과 함께 운동을 즐겨보세요!</p>
+					<button class="ghost btn btn-primary" id="signIn">로그인</button>
+				</div>
+				<div class="overlay-panel overlay-right">
+					<h1>계정이 없으신가요?</h1>
+					<p>시설예약과 운동메이트 찾기를 한 곳에서!</p>
+					<button class="ghost btn btn-primary" id="signUp">회원가입</button>
+				</div>
+			</div>
+		</div>
+		<!-- 로그인 END -->
+	</main>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/upload.js"></script>
+
+<script th:if="${errorMessage}">
+    alert("[[${errorMessage}]]");
+</script>
+<script th:if="${message}">
+    alert("[[${message}]]");
+</script>
+
+
+
+
+<script>
+	// 프로필 이미지 업로드
+/* 	const fileInput = document.querySelector("input[name='memPicture']");
+
+	fileInput.addEventListener('change', function (e) {
+	    const formObj = new FormData();
+
+	    // 파일 선택 여부 확인
+	    if (fileInput.files.length === 0) {
+	        console.log("파일이 선택되지 않았습니다.");
+	        return;
+	    }
+	    
+
+	    // 파일 확장자 검사
+	    const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+	    const fileExtension = file.name.split('.').pop().toLowerCase();
+	    if (!validExtensions.includes(fileExtension)) {
+	        alert("올바른 이미지 파일을 선택해주세요. (jpg, jpeg, png, gif)");
+	        return;
+	    }
+
+	    console.log(fileInput.files); // 선택된 파일 목록 로그 출력
+
+	    const files = fileInput.files;
+
+	    // 파일 데이터를 FormData에 추가
+	    for (let i = 0; i < files.length; i++) {
+	        formObj.append("files", files[i]);
+	    }
+
+	    // 서버로 업로드 요청
+	    uploadToServer(formObj)
+	        .then(result => {
+	            console.log("업로드 성공:", result);
+	            alert("이미지가 업로드되었습니다.");
+	        })
+	        .catch(e => {
+	            console.error("업로드 실패:", e);
+	            alert("이미지 업로드에 실패했습니다.");
+	        });
+	}); */
+
+	
+	
+	// 애니메이션
+	const signUpButton = document.getElementById('signUp');
+	const signInButton = document.getElementById('signIn');
+	const container = document.querySelector('.container');
+
+	signUpButton.addEventListener('click', () => {
+		container.classList.add("right-panel-active");
+	});
+
+	signInButton.addEventListener('click', () => {
+		container.classList.remove("right-panel-active");
+	});
+
+	// 주소
+	function searchPostCode() {
+		new daum.Postcode({
+			oncomplete: function (data) {
+				// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+				// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+				// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+				var addr = ''; // 주소 변수
+				var extraAddr = ''; // 참고항목 변수
+
+				//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+				if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+					addr = data.roadAddress;
+				} else { // 사용자가 지번 주소를 선택했을 경우(J)
+					addr = data.jibunAddress;
+				}
+
+				// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+				if (data.userSelectedType === 'R') {
+					// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+					// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+					if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+						extraAddr += data.bname;
+					}
+					// 건물명이 있고, 공동주택일 경우 추가한다.
+					if (data.buildingName !== '' && data.apartment === 'Y') {
+						extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+					}
+					// 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+					if (extraAddr !== '') {
+						extraAddr = ' (' + extraAddr + ')';
+					}
+					// 조합된 참고항목을 해당 필드에 넣는다.
+					document.getElementById("memAddress").value = extraAddr;
+
+				} else {
+					document.getElementById("memAddress").value = '';
+				}
+
+				// 우편번호와 주소 정보를 해당 필드에 넣는다.
+				document.getElementById('memZipcode').value = data.zonecode;
+				document.getElementById("memAddress").value = addr;
+				// 커서를 상세주소 필드로 이동한다.
+				document.getElementById("memAddressDetail").focus();
+			}
+		}).open();
+	}
+
+	// 유효성 검사
+	const registerForm = document.getElementById('registerForm');
+	const checkIdButton = document.getElementById('checkIdButton');
+	let isIdChecked = false; // 아이디 중복확인 여부
+
+	// 아이디 중복 확인 버튼 클릭 이벤트
+	checkIdButton.addEventListener('click', function () {
+	    const memId = document.getElementById('memId').value.trim();
+
+	    if (!memId) {
+	        alert('아이디를 입력하세요.');
+	        return;
+	    }
+
+	    // 서버로 아이디 중복 확인 요청
+	    fetch(`/member/checkId?MEM_ID=${encodeURIComponent(memId)}`)
+	        .then((response) => response.json())
+	        .then((data) => {
+	            if (data.status === 'SUCCESS') {
+	                alert(data.message); // 사용 가능한 아이디입니다.
+	                isIdChecked = true; // 중복확인 완료
+	            } else {
+	                alert(data.message); // 이미 존재하는 아이디입니다.
+	                isIdChecked = false;
+	            }
+	        })
+	        .catch((error) => {
+	            console.error('Error:', error);
+	            alert('아이디 중복 확인 중 문제가 발생했습니다.');
+	        });
+	});
+
+	// 회원가입 폼 제출 이벤트
+	registerForm.addEventListener('submit', function (e) {
+	    e.preventDefault(); // 기본 제출 이벤트 방지
+
+	    // 필수 입력값 검사
+	    const requiredFields = [
+	        { id: 'memId', label: '* 아이디', validate: (value) => /^[a-zA-Z0-9_]{5,20}$/.test(value), errorMessage: '아이디는 5~20자의 영문자, 숫자, 밑줄(_)만 사용할 수 있습니다.' },
+	        { id: 'memPw', label: '* 비밀번호', validate: (value) => /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value), errorMessage: '비밀번호는 최소 8자 이상, 하나의 문자, 숫자, 특수문자를 포함해야 합니다.' },
+	        { id: 'memPwCk', label: '* 비밀번호 확인', validate: (value) => value === document.getElementById('memPw').value.trim(), errorMessage: '비밀번호와 비밀번호 확인이 일치하지 않습니다.' },
+	        { id: 'memName', label: '* 이름', validate: (value) => /^[가-힣a-zA-Z]{2,5}$/.test(value), errorMessage: '이름은 2~20자의 한글 또는 영문이어야 합니다.' },
+	        { id: 'memNickname', label: '* 닉네임', validate: (value) => /^[a-zA-Z0-9가-힣]{2,10}$/.test(value), errorMessage: '닉네임은 2~10자의 한글, 영문, 숫자만 사용할 수 있습니다.' },
+	        { id: 'memTell', label: '* 전화번호', validate: (value) => /^010\d{8}$/.test(value), errorMessage: '전화번호는 010으로 시작하며, 숫자 11자리여야 합니다.' },
+	        { id: 'memEmail', label: '* 이메일', validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), errorMessage: '유효한 이메일 주소를 입력해주세요.' },
+	        { id: 'memZipcode', label: '* 우편번호', validate: (value) => /^\d{5}$/.test(value), errorMessage: '우편번호는 5자리 숫자여야 합니다.' },
+	        { id: 'memAddress', label: '* 주소', validate: (value) => value.trim() !== '', errorMessage: '주소를 입력해주세요.' },
+	        { id: 'memAddressDetail', label: '* 상세 주소', validate: (value) => value.trim() !== '', errorMessage: '상세 주소를 입력해주세요.' }
+	    ];
+
+	    for (const field of requiredFields) {
+	        const input = document.getElementById(field.id);
+	        const errorElement = input.nextElementSibling;
+	        const value = input.value.trim();
+
+	        if (!value || (field.validate && !field.validate(value))) {
+	            if (errorElement && errorElement.classList.contains('text-danger')) {
+	                errorElement.style.display = 'block';
+	            }
+	            input.focus();
+	            return;
+	        } else {
+	            if (errorElement && errorElement.classList.contains('text-danger')) {
+	                errorElement.style.display = 'none';
+	            }
+	        }
+	    }
+
+	    // 아이디 중복확인 여부 검사
+	    if (!isIdChecked) {
+	        alert('아이디 중복확인을 해주세요.');
+	        document.getElementById('memId').focus();
+	        return;
+	    }
+
+	   
+	    
+	    // 유효성 검사가 모두 통과되었으면 폼 제출
+	    alert('회원가입이 완료되었습니다.');
+	    registerForm.submit();
+	});
+
+
+
+
+
+
+
+</script>
+
+</html>

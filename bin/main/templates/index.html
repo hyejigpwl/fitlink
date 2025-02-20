@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+	<!-- meta_tag include -->
+
+	<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+	<title>FITLINK</title>
+
+	<!-- 공통 css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+		integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+
+	<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+	<!-- Linking CSS files -->
+	<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+
+	<!-- 공통 js -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+		crossorigin="anonymous"></script>
+	<script type="text/javascript"
+		src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3cd1cbb83ed8cd66805a1d9f6fd57a32&libraries=services"></script>
+
+</head>
+
+<body>
+	<!-- <button onclick="location.href='/member/join'">회원가입</button>
+	<button onclick="location.href='/member/login'">로그인</button> -->
+	<div th:insert="~{layouts/header :: header}"></div>
+	<main class="main" id="club_main_pg">
+		<div class="container">
+			<div th:if="${#authentication.principal != 'anonymousUser'}" class="top_wrap">
+				<div class="profile-section">
+					<!-- 소셜로그인 -->
+					<th:block
+						th:if="${#authentication.principal.memPicture != null and !#authentication.principal.memPicture.isEmpty() and #authentication.principal.memPicture.startsWith('http') and member.memSocial}">
+						<img th:src="${#authentication.principal.memPicture}" alt="프로필 이미지" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">
+					</th:block>
+
+					<!-- 소셜로그인x -->
+					<th:block
+						th:if="${#authentication.principal.memPicture != null and !#authentication.principal.memPicture.isEmpty() and !#authentication.principal.memPicture.startsWith('http')}">
+						<img th:src="|/view/${#authentication.principal.memPicture}|" alt="프로필 이미지" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">
+					</th:block>
+
+					<!-- 프로필이미지x -->
+					<th:block
+						th:if="${#authentication.principal.memPicture == null or #authentication.principal.memPicture.isEmpty()}">
+						<img src="https://ssl.pstatic.net/static/pwe/address/img_profile.png" alt="프로필 이미지">
+					</th:block>
+
+				</div>
+				<div onclick="location.href='/member/mypage'" style="cursor: pointer">
+					안녕하세요! <span th:text="${#authentication.principal.memNickname}"></span>님.
+					오늘도 건강한 하루 보내세요.
+				</div>
+				<a class="btn btn-danger" th:if="${#authentication.principal != 'anonymousUser'}"
+					href="/member/logout">로그아웃</a>
+			</div>
+
+			<div th:if="${#authentication.principal == 'anonymousUser'}" class="top_wrap">
+				<p th:if="${#authentication.principal == 'anonymousUser'}">우리
+					동네에서 운동메이트를 찾아보세요!</p>
+				<a class="btn btn-primary" th:if="${#authentication.principal == 'anonymousUser'}"
+					href="/member/login">로그인</a>
+			</div>
+
+
+		</div>
+
+
+		<!-- 상단 클럽 생성 / 나의 클럽 START -->
+		<section id="my_club">
+			<div class="container my_club_container">
+				<!-- Create Card -->
+				<div class="card create">
+					<a href="/club/club_create"><img src="/img/plus_icon.png" alt=""></a>만들기
+				</div>
+
+				<!-- First Card -->
+				<div th:if="${#authentication.principal == 'anonymousUser'}" class="card">
+					<img src="/img/member.png" style="height:175px" alt="Group Image">
+					<div class="card-content">
+						<h3> 92 </h3>
+						<p>멤버 4</p>
+					</div>
+				</div>
+
+
+			</div>
+		</section>
+		<!-- 상단 클럽 생성 / 나의 클럽 END -->
+
+		<!-- 클럽 테마 탭메뉴 START -->
+		<section id="club_theme" class="container" style="text-align: center">
+			<!-- 로그인 상태이면서 지역 정보가 있는 경우 -->
+			<h2 th:if="${#authentication.principal != 'anonymousUser' and member.memAddressSet != null}"
+				class="club-location" style="cursor: pointer">
+				<span th:text="${member.memAddressSet}" id="status"></span>
+				<button type="button" class="region_btn" data-bs-toggle="modal" data-bs-target="#mapModal">지역
+					선택</button>
+			</h2>
+
+			<!-- 로그인 상태이면서 지역 정보가 없는 경우 -->
+			<!-- 		<h2
+				th:if="${#authentication.principal != 'anonymousUser' and member.memAddressSet == null}"
+				class="club-location" style="cursor: pointer">
+				<span id="status">지역을 선택해주세요</span>
+				<button type="button" class="region_btn" data-bs-toggle="modal"
+					data-bs-target="#mapModal">지역 선택</button>
+			</h2> -->
+			<h2 th:if="${#authentication.principal != 'anonymousUser' and member.memAddressSet == null and member.memSocial == false}"
+				class="club-location" style="cursor: pointer">
+				<span th:text="${member.memAddress}" id="status"></span>
+				<button type="button" class="region_btn" data-bs-toggle="modal" data-bs-target="#mapModal">지역
+					선택</button>
+			</h2>
+
+			<h2 th:if="${#authentication.principal != 'anonymousUser' and member.memAddressSet == null and (member.memAddress == null or member.memAddress == '')}"
+				class="club-location" style="cursor: pointer">
+				<span id="status">지역을 선택해주세요</span>
+				<button type="button" class="region_btn" data-bs-toggle="modal" data-bs-target="#mapModal">지역
+					선택</button>
+			</h2>
+
+			<!-- 로그아웃 상태 -->
+			<h2 th:if="${#authentication.principal == 'anonymousUser' }" class="club-location" style="cursor: pointer">
+				<span id="status">로그인이 필요합니다</span>
+				<button type="button" class="region_btn" onclick="location.href='/member/login'">로그인</button>
+			</h2>
+
+			<!-- 지도 팝업 모달 -->
+			<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="mapModalLabel">위치 선택</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div id="map" style="width: 100%; height: 400px;"></div>
+							<p id="modalStatus">지도를 로딩중입니다.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+							<button type="button" class="btn btn-primary" id="confirmLocation">확인</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 			<button type="button" class="btn" th:classappend="${theme == 'ALL'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/}?theme=ALL&page=1'|">전체</button>
+
+			<button type="button" class="btn" value="THM_SPORTCLUB"
+				th:classappend="${theme == 'THM_SPORTCLUB'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/}?theme=THM_SPORTCLUB&page=1'|">운동클럽</button> -->
+
+			<!-- 클럽 테마 필터링 버튼 -->
+			<button type="button" class="btn" th:classappend="${theme == 'ALL' || theme == null} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=ALL, address=${address}, page=1)}'|">전체</button>
+<!-- 			th:onclick="|location.href='@{/}?theme=ALL&page=1'|">전체</button>  -->
+
+			<button type="button" class="btn" value="THM_SPORTCLUB"
+				th:classappend="${theme == 'THM_SPORTCLUB'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_SPORTCLUB, address=${address}, page=1)}'|">운동클럽</button>
+
+			<button type="button" class="btn" value="THM_SPORTJOURNAL"
+				th:classappend="${theme == 'THM_SPORTJOURNAL'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_SPORTJOURNAL, address=${address}, page=1)}'|">운동일지</button>
+
+			<button type="button" class="btn" value="THM_FOOD"
+				th:classappend="${theme == 'THM_FOOD'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_FOOD, address=${address}, page=1)}'|">영양제/식단</button>
+
+			<button type="button" class="btn" value="THM_FITNESS"
+				th:classappend="${theme == 'THM_FITNESS'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_FITNESS, address=${address}, page=1)}'|">헬스</button>
+
+			<button type="button" class="btn" value="THM_DIET"
+				th:classappend="${theme == 'THM_DIET'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_DIET, address=${address}, page=1)}'|">체중감량</button>
+
+			<button type="button" class="btn" value="THM_BODYPROFILE"
+				th:classappend="${theme == 'THM_BODYPROFILE'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_BODYPROFILE, address=${address}, page=1)}'|">바디프로필</button>
+
+			<button type="button" class="btn" value="THM_RECOVER"
+				th:classappend="${theme == 'THM_RECOVER'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_RECOVER, address=${address}, page=1)}'|">부상/재활</button>
+
+			<button type="button" class="btn" value="THM_CONTEST"
+				th:classappend="${theme == 'THM_CONTEST'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_CONTEST, address=${address}, page=1)}'|">대회준비</button>
+
+			<button type="button" class="btn" value="THM_EXAM"
+				th:classappend="${theme == 'THM_EXAM'} ? 'btn-primary' : 'btn-secondary'"
+				th:onclick="|location.href='@{/(theme=THM_EXAM, address=${address}, page=1)}'|">입시준비</button>
+
+		</section>
+		<!-- 클럽 테마 탭메뉴 END -->
+
+		<!-- 클럽 목록 START -->
+		<section id="club_list" class="container">
+			<ul>
+				<li th:if="${responseDTO.dtoList.isEmpty()}">
+					<p>클럽이 없습니다.</p>
+				</li>
+				<li class="club-card" th:each="club : ${responseDTO.dtoList}"
+					th:onclick="|location.href='@{/club/club_detail(clubCode=${club.clubCode})}'|">
+					
+					<img th:src="|/view/${club.clubImage1}|" id="clubImage1"
+						onerror="this.src='https://placehold.co/80'">
+
+					<div class="club-content">
+						<div class="club-title" id="clubName" th:text="${club.clubName}"></div>
+						<div class="club-description" th:text="${club.clubIntroduction}"></div>
+						<input type="hidden" id="clubTheme" name="clubTheme" th:value="${club.clubTheme}" />
+						<div class="club-details">
+							<div>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+									<path
+										d="M2.2 10.58C2.2 5.17 6.59.78 12 .78s9.8 4.39 9.8 9.8c0 3.4-2.2 6.56-4.38 8.79-1.1 1.14-2.24 2.08-3.17 2.74-.46.33-.88.6-1.23.78-.17.1-.34.18-.49.24-.13.05-.33.12-.53.12s-.39-.07-.53-.12c-.15-.06-.32-.14-.49-.24-.35-.18-.77-.45-1.23-.78-.93-.66-2.07-1.6-3.17-2.74C4.4 17.14 2.2 13.98 2.2 10.58Zm6.18-.48c0-1.99 1.62-3.62 3.62-3.62 2 0 3.62 1.63 3.62 3.62s-1.62 3.62-3.62 3.62c-2 0-3.62-1.63-3.62-3.62Z" />
+								</svg>
+								<span th:text="${club.clubAddress}"></span>
+							</div>
+							<div>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+									<path
+										d="M12 2.6c-3.1 0-5.6 2.5-5.6 5.6 0 3.1 2.5 5.6 5.6 5.6s5.6-2.5 5.6-5.6c0-3.1-2.5-5.6-5.6-5.6Zm0 12c-5.2 0-8.6 2.8-8.6 6.6 0 .3.3.6.6.6h16c.3 0 .6-.3.6-.6 0-3.8-3.4-6.6-8.6-6.6Z" />
+								</svg>
+								<span th:text="${club.memberCount}">명</span>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+
+			<nav th:if="${!responseDTO.dtoList.isEmpty()}" aria-label="Page navigation" class="mt-3">
+				<ul class="pagination justify-content-center">
+					<!-- 이전 페이지 -->
+					<li class="page-item" th:classappend="${responseDTO.page == 1} ? 'disabled'"><a class="page-link"
+							th:href="@{'/'(theme=${theme}, address=${address}, page=${responseDTO.page - 1})}"
+							aria-label="Previous">«</a></li>
+
+					<!-- 페이지 번호 -->
+					<th:block th:each="i : ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+						<li class="page-item" th:classappend="${responseDTO.page == i} ? 'active'">
+							<a class="page-link" th:href="@{'/'(theme=${theme}, address=${address}, page=${i})}">
+								[[${i}]] </a>
+						</li>
+					</th:block>
+
+					<!-- 다음 페이지 -->
+					<li class="page-item" th:classappend="${responseDTO.page == responseDTO.end} ? 'disabled'">
+						<a class="page-link"
+							th:href="@{'/'(theme=${theme}, address=${address}, page=${responseDTO.page + 1})}"
+							aria-label="Next">»</a>
+					</li>
+
+				</ul>
+			</nav>
+
+		</section>
+		<!-- 클럽 목록 END -->
+	</main>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="/js/gd.js"></script>
+	<div th:insert="~{layouts/footer :: footer}"></div>
+	<script layout:fragment="script" th:inline="javascript">
+		let map;
+		let geocoder;
+		let selectedAddress = "";
+		let currentAddress = "";
+		let marker; // 마커 객체
+		const memRole = /*[[${#authentication.principal}]]*/'';
+
+		document.getElementById("mapModal").addEventListener("shown.bs.modal", () => {
+			currentAddress = document.getElementById("status").textContent;
+
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						const {latitude, longitude} = position.coords;
+
+						// Kakao 지도 초기화
+						const mapContainer = document.getElementById("map");
+						const mapOption = {
+							center: new kakao.maps.LatLng(latitude, longitude),
+							level: 4,
+						};
+						map = new kakao.maps.Map(mapContainer, mapOption);
+						geocoder = new kakao.maps.services.Geocoder();
+
+						// 현재 위치에 마커 추가
+						marker = new kakao.maps.Marker({
+							position: new kakao.maps.LatLng(latitude, longitude),
+							map: map,
+						});
+
+						// 현재 위치의 주소를 가져와 id="status"에 설정
+						geocoder.coord2RegionCode(longitude, latitude, (result, statusCode) => {
+							if (statusCode === kakao.maps.services.Status.OK) {
+								selectedAddress =
+									result.find((region) => region.region_type === "H")?.address_name || "주소를 확인할 수 없습니다.";
+								//document.getElementById("status").textContent = selectedAddress;								
+
+								document.getElementById("modalStatus").textContent = `현재 위치: ${selectedAddress}`;
+							}
+						});
+
+						// 지도 이동 이벤트 처리
+						kakao.maps.event.addListener(map, "dragend", () => {
+							const center = map.getCenter();
+							marker.setPosition(center); // 마커 위치 갱신
+							geocoder.coord2RegionCode(center.getLng(), center.getLat(), (result, statusCode) => {
+								if (statusCode === kakao.maps.services.Status.OK) {
+									selectedAddress =
+										result.find((region) => region.region_type === "H")?.address_name || "주소를 확인할 수 없습니다.";
+									document.getElementById("modalStatus").textContent = `선택된 위치: ${selectedAddress}`;
+								}
+							});
+						});
+					},
+					(error) => {
+						document.getElementById("modalStatus").textContent = `위치 정보를 가져올 수 없습니다: ${error.message}`;
+					}
+				);
+			} else {
+				document.getElementById("modalStatus").textContent = "브라우저가 위치 서비스를 지원하지 않습니다.";
+			}
+		});
+
+		document.getElementById("confirmLocation").addEventListener("click", () => {
+			if (selectedAddress) {
+				document.getElementById("status").textContent = selectedAddress;
+				updateMemAddress(selectedAddress);
+			}
+
+			// 모달 닫기
+			const modal = bootstrap.Modal.getInstance(document.getElementById("mapModal"));
+			modal.hide();			
+		});
+
+		document.getElementById("mapModal").addEventListener("hidden.bs.modal", () => {
+			selectedAddress = "";
+			document.getElementById("status").textContent = currentAddress;
+		})
+
+		function updateMemAddress(address) {
+			fetch("/update-mem-address", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({memAddressSet: address}),
+			})
+				.then(response => response.text())
+				.then(updatedAddress => {
+					console.log("Update Success:", updatedAddress);
+					document.getElementById("status").textContent = updatedAddress;
+					
+					let newUrl = `/?address=${updatedAddress}&theme=ALL&page=1`;
+					window.location.replace(newUrl);
+				})
+				.catch((error) => {
+					console.error("Update Error:", error);
+				});
+		}
+
+		function printClubList(memRole) {
+			if (memRole == 'anonymousUser') {
+				return;
+			}
+			else {
+				getClubList().then(data => {
+					let str = "";
+					if (data && data.length > 0) {
+						for (const club of data) {
+							str += `<div class="card"
+									onclick="location.href='/club/club_detail?clubCode=${club.clubCode}'">
+										<img src="/view/${club.clubImage1}"
+											onerror="this.src='https://placehold.co/200x140'">
+										<div class="card-content">
+											<h3>${club.clubName}</h3>
+											<p>멤버 ${club.memberCount}</p>
+										</div>
+									</div>`
+						}
+					}
+					const myClub = document.querySelector(".my_club_container")
+					myClub.innerHTML += str;
+				})
+			}
+		}
+
+		printClubList(memRole);
+				
+		document.addEventListener("DOMContentLoaded", function() {
+		const flashMessage = localStorage.getItem("flashMessage");
+		
+			if (flashMessage !== null) {
+				alert(flashMessage);
+				localStorage.removeItem("flashMessage");
+			}
+		})
+		
+		// 나의 클럽 많을때 마우스 드래그로 좌우 이동
+		const slider = document.querySelector('.my_club_container');
+		let isMouseDown = false;
+		let startX, scrollLeft;
+		 
+		slider.addEventListener('mousedown', (e) => {
+		  isMouseDown = true;
+		  scrollLeft = slider.scrollLeft;
+		  startX = e.pageX - slider.offsetLeft;
+		});
+		 
+		slider.addEventListener('mouseleave', () => {
+		  isMouseDown = false;
+		});
+		 
+		slider.addEventListener('mouseup', () => {
+		  isMouseDown = false;
+		});
+		 
+		slider.addEventListener('mousemove', (e) => {
+		  if (!isMouseDown) return;
+		  e.preventDefault();
+		  const x = e.pageX - slider.offsetLeft;
+		  const walk = (x - startX) * 1;
+		  slider.scrollLeft = scrollLeft - walk;
+		});
+		
+	</script>
+
+
+</body>
+
+</html>

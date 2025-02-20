@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<!-- meta_tag include -->
+	<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+	<title>클럽생성</title>
+
+	<!-- 공통 css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+		integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+	<!-- Linking CSS files -->
+	<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+	<link rel="stylesheet" th:href="@{/css/detail_yj.css}" />
+
+	<!-- 공통 js -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+		crossorigin="anonymous"></script>
+	<script type="text/javascript"
+		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3cd1cbb83ed8cd66805a1d9f6fd57a32&libraries=services"></script>
+</head>
+
+<body>
+	<div th:insert="~{layouts/header :: header}"></div>
+
+	<main class="container main" style="margin: 15px auto 0 auto;">
+		<div id="flashMessage" th:if="${message != null}" th:data-message="${message}" style="display: none;"></div>
+		
+		<form id="clubcreate" action="/club/create" method="post" enctype="multipart/form-data" onsubmit="return validateClubForm()">
+
+			<label for="club-name">클럽명 </label> <input type="text" name="clubName" id="clubName" placeholder="클럽명"
+				maxlength="20" required></input>
+
+			<label for="club-name">클럽방장</label> <input type="text" name="memId" id="memId"
+				th:value="${#authentication.principal.memId}" readonly></input>
+
+			<label for="club-exercise">선호 운동 코드</label>
+			<div class="exercise-container">
+				<div class="exercise-selection">
+					<input type="hidden" id="clubExercise" name="clubExercise" />
+					<button type="button" onclick="selectExercise(this)" value="EXE_BADMINTON">배드민턴</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_BASEBALL">야구</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_BASKET">농구</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_CLIMB">암벽등반</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_FOOTBALL">축구</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_FUTSAL">풋살</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_FITNESS">헬스</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_MOUNT">등산</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_PILATES">필라테스</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_TENNIS">테니스</button>
+					<button type="button" onclick="selectExercise(this)" value="EXE_YOGA">요가</button>
+				</div>
+			</div>
+
+			<label for="club-theme">클럽 테마</label>
+			<div class="theme-container">
+				<div class="theme-selection">
+					<input type="hidden" id="clubTheme" name="clubTheme" />
+					<button type="button" onclick="selectTheme(this)" value="THM_SPORTCLUB">운동클럽</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_SPORTJOURNAL">운동일지</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_FOOD">영양제/식단</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_FITNESS">헬스</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_DIET">체중감량</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_BODYPROFILE">바디프로필</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_RECOVER">부상/재활</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_CONTEST">대회준비</button>
+					<button type="button" onclick="selectTheme(this)" value="THM_EXAM">입시준비</button>
+				</div>
+			</div>
+
+			<label for="club-description">클럽 소개</label>
+			<div class="club-intro-container">
+				<textarea name="clubIntroduction" id="clubIntroduction" maxlength="1000" rows="10"
+					placeholder="활동 중심으로 모임을 소개해주세요. 모임 설정에서 언제든지 바꿀 수 있어요." required></textarea>
+			</div>
+
+			<!-- 사진 추가 -->
+			<label for="club-image">대표 이미지</label>
+			<div class="club-image-container">
+				<div class="club-image-upload">
+					<label for="clubImage1"> <img id="photo-upload-1" src="/img/plus_icon.png" alt="대표이미지1"
+							class="default-icon">
+					</label>
+					<button type="button" class="delete-btn" onclick="removeImage('clubImage1', 'photo-upload-1')">X</button>
+					 
+					 <input id="clubImage1" name="files" type="file" accept="image/*"
+						onchange="previewImage(event, 'photo-upload-1')" style="display: none;" />
+				</div>
+				<div class="club-image-upload">
+					<label for="clubImage2"> <img id="photo-upload-2" src="/img/plus_icon.png" alt="대표이미지2"
+							class="default-icon">
+					</label>
+					<button type="button" class="delete-btn" onclick="removeImage('clubImage2', 'photo-upload-2')">X</button>
+					 <input id="clubImage2" name="files" type="file" accept="image/*"
+						onchange="previewImage(event, 'photo-upload-2')" style="display: none;" />
+				</div>
+				<div class="club-image-upload">
+					<label for="clubImage3"> <img id="photo-upload-3" src="/img/plus_icon.png" alt="대표이미지3"
+							class="default-icon">
+					</label> 
+					<button type="button" class="delete-btn" onclick="removeImage('clubImage3', 'photo-upload-3')">X</button>
+					<input id="clubImage3" name="files" type="file" accept="image/*"
+						onchange="previewImage(event, 'photo-upload-3')" style="display: none;" />
+				</div>
+
+				<div class="club-image-upload">
+					<label for="clubImage4"> <img id="photo-upload-4" src="/img/plus_icon.png" alt="대표이미지4"
+							class="default-icon">
+					</label>
+					<button type="button" class="delete-btn" onclick="removeImage('clubImage4', 'photo-upload-4')">X</button>
+					<input id="clubImage4" name="files" type="file" accept="image/*"
+						onchange="previewImage(event, 'photo-upload-4')" style="display: none;" />
+				</div>
+			</div>
+
+			<!-- 주활동지역 -->
+			<label class="form-label">주활동지역</label> <input type="hidden" id="clubAddress" name="clubAddress" readonly required></input>
+			<button type="button" onclick="getLocation()">위치 찾기</button>
+			<p id="status">위치를 찾지 못했습니다</p>
+			<div id="map" style="width: 500px; height: 400px;"></div>			
+
+			<!-- 클럽 공개여부 / 비밀번호 -->
+			<label for="club-isprivate">클럽 공개여부</label>
+			<div class="club-isprivate">
+				<input type="radio" id="clubIsprivateNo" name="clubIsprivate" th:value="false" onchange="togglePasswordField()" required> 공개 
+				<input type="radio" id="clubIsprivateYes" name="clubIsprivate" th:value="true" onchange="togglePasswordField()" required> 비공개 
+				<input type="password" id="clubPw" name="clubPw" placeholder="비밀번호 입력" maxlength="15" style="display: none; margin-left: 10px;">
+			</div>
+
+			<button type="submit" class="btn btn-primary mt-4" style="margin-bottom: 20px;">만들기</button>
+			<button type="reset" class="btn btn-secondary mt-4" style="margin-bottom: 20px;">새로고침</button>
+		</form>
+	</main>
+	<div th:insert="~{layouts/footer :: footer}"></div>
+</body>
+
+<script>
+	// 선호운동 버튼
+	function selectExercise(button) {
+		document.getElementById('clubExercise').value = button.value;
+
+		const exercisebuttons = document.querySelectorAll('.exercise-selection button');
+		exercisebuttons.forEach(btn => btn.classList.remove('selected'));
+		button.classList.add('selected');
+	}
+
+	// 운동테마 버튼
+	function selectTheme(button) {
+		const themevalue = document.getElementById('clubTheme');
+		let selectedThemes = themevalue.value ? themevalue.value.split(',') : [];
+
+		if (button.classList.contains('selected')) {
+			selectedThemes = selectedThemes.filter(theme => theme !== button.value);
+			button.classList.remove('selected');
+		} else {
+			// 테마 4개까지만 선택가능 
+			if (selectedThemes.length >= 4) {
+				alert('최대 4개의 테마만 선택할 수 있습니다');
+				return;
+			}
+			selectedThemes.push(button.value);
+			button.classList.add('selected');
+		}
+		themevalue.value = selectedThemes.join(',');
+	}
+
+	// 클럽 공개여부 비밀번호
+	function togglePasswordField() {
+		const isPrivate = document.getElementById('clubIsprivateYes').checked;
+		const passwordField = document.getElementById('clubPw');
+		if (isPrivate) {
+			passwordField.style.display = 'inline-block';
+		} else {
+			passwordField.style.display = 'none';
+			passwordField.value = '';
+		}
+	}
+
+	// 클럽사진 미리보기
+	function previewImage(event, targetId) {
+		const reader = new FileReader();
+		reader.onload = function () {
+			const preview = document.getElementById(targetId);
+			preview.src = reader.result;
+			preview.classList.remove('default-icon');
+
+		};
+		reader.readAsDataURL(event.target.files[0]);
+	}
+
+	// 이미지 제거
+	function removeImage(inputId, imgId) {
+	    const fileInput = document.getElementById(inputId);
+	    const image = document.getElementById(imgId);
+
+	    // UI 초기화
+	    image.src = "/img/plus_icon.png"; // 기본 이미지로 변경
+	    image.classList.add("default-icon");
+	    fileInput.value = ""; // 파일 입력 초기화
+	}
+	
+	// 위치기반
+	let map;
+	let ps;
+
+	function getLocation() {
+	    const status = document.getElementById("status");
+	    const clubAddressInput = document.getElementById("clubAddress");
+
+	    if ("geolocation" in navigator) {
+	        navigator.geolocation.getCurrentPosition(
+	            (position) => {
+	                const { latitude, longitude } = position.coords;
+	                
+	                // Kakao 지도 설정
+	                const mapContainer = document.getElementById('map');
+	                const mapOption = {
+	                    center: new kakao.maps.LatLng(latitude, longitude),
+	                    level: 4
+	                };
+	                map = new kakao.maps.Map(mapContainer, mapOption);
+
+	                // 마커 표시
+	                const marker = new kakao.maps.Marker({
+	                    position: new kakao.maps.LatLng(latitude, longitude)
+	                });
+	                marker.setMap(map);
+
+	                // Kakao Maps Services로 좌표 -> 주소 변환
+	                const geocoder = new kakao.maps.services.Geocoder();
+	                geocoder.coord2RegionCode(longitude, latitude, (result, statusCode) => {
+	                    if (statusCode === kakao.maps.services.Status.OK) {
+	                        // 동 이름 가져오기
+	                        const dongAddress = result.find((region) => region.region_type === "H")?.address_name;
+	                      /*   if (dongAddress) {
+	                            status.textContent = `현재 위치: ${dongAddress}`; */
+	                            if (dongAddress) {
+	                            	const trimaddress = dongAddress.replace("특별시", "")
+	                            								   .replace("광역시", "")
+	                            								   .trim();
+	                            	status.textContent = `현재 위치: ${trimaddress}`;	                            
+	                            	clubAddressInput.value = trimaddress; // clubAddress 히든 필드에 설정
+	                        } else {
+	                            status.textContent = "주소 정보를 가져올 수 없습니다.";
+	                            clubAddressInput.value = ""; // 오류 시 빈 값 설정
+	                        }
+	                    } else {
+	                        status.textContent = "주소 변환 중 오류가 발생했습니다.";
+	                        clubAddressInput.value = ""; // 오류 시 빈 값 설정
+	                    }
+	                });
+	            },
+	            (error) => {
+	                status.textContent = `위치 정보를 가져올 수 없습니다: ${error.message}`;
+	                clubAddressInput.value = ""; // 오류 시 빈 값 설정
+	            }
+	        );
+	    } else {
+	        status.textContent = "브라우저가 위치 서비스를 지원하지 않습니다.";
+	        clubAddressInput.value = ""; // 브라우저 지원 불가 시 빈 값 설정
+	    }
+	}
+	
+	const flashMessage = document.getElementById("flashMessage");
+	 if (flashMessage) {
+		const message = flashMessage.getAttribute("data-message");
+		if (message) {
+			alert(message);
+		}
+	}
+	    
+	function validateClubForm() {
+		let clubImage = document.getElementById("clubImage1").files.length;
+		let clubAddress = document.getElementById("clubAddress").value;
+		let isPrivateNo = document.getElementById("clubIsprivateNo").checked;
+		let isPrivateYes = document.getElementById("clubIsprivateYes").checked;	
+		let clubPw = document.getElementById("clubPw").value;
+
+		if (clubImage === 0) {
+			alert("클럽 대표이미지1을 업로드해주세요");
+			return false;
+		} 	
+		
+		if (!clubAddress) {
+			alert("주활동지역을 설정해주세요");
+			return false;
+		} 
+		
+		if (!isPrivateNo && !isPrivateYes) {
+			alert("클럽 공개 여부를 선택해주세요");
+			return false;
+		} 
+		
+		if (isPrivateYes && clubPw === "") {
+			alert("비공개 클럽은 비밀번호를 입력해야 합니다");
+			return false;
+		} 
+	}	    
+
+
+</script>
+
+</html>

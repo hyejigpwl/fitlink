@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- meta_tag include -->
+<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+<title>클럽게시글</title>
+
+<!-- 공통 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css" integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" th:href="@{/css/common.css}">
+
+<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+<!-- Linking CSS files -->
+<link rel="stylesheet" th:href="@{/css/detail_hj.css}"/>
+<link rel="stylesheet" th:href="@{/css/detail_yj.css}">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" 
+   integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+   crossorigin="anonymous">
+
+<!-- 공통 js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+	<div th:insert="~{layouts/header :: header}"></div>
+	    <main class="container my-5">
+            <div class="row mt-3">
+                <div class="col">
+                  <div class="card" style="box-shadow: none; border: none;">
+                    <div class="card-header">
+                      게시글
+                    </div>
+                    <div class="card-body">
+                      <form action="/club/board_register" method="post">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01"><i class="fas fa-pen-nib"></i></label>
+                          </div>
+                          <select class="custom-select" id="inputGroupSelect01" name="BOARD_TYPE" style="text-align: center;"
+                            onFocus='this.initialSelect = this.selectedIndex;'onChange='this.selectedIndex = this.initialSelect;'>
+                            <option th:selected="${dto.BOARD_TYPE} == 'Notice'" value="Notice">#공지#</option>
+                            <option th:selected="${dto.BOARD_TYPE} == 'FreeBoard'" value="FreeBoard">자유 게시판</option>
+                            <option th:selected="${dto.BOARD_TYPE} == 'Hello'" value="Hello">가입 인사</option>
+                            <option th:selected="${dto.BOARD_TYPE} == 'Reviews'" value="Reviews">정산&후기</option>
+                          </select>
+                        </div>
+            
+                        <div class="input-group mb-3">
+                          <span class="input-group-text"><i class="fas fa-keyboard"></i></span>
+                          <input type="hidden" name="CLUB_CODE" th:value="${dto.CLUB_CODE}">
+                          <textarea class="form-control col-sm-5  mb-0" rows="5" name="BOARD_TEXT" th:text="${dto.BOARD_TEXT}" readonly></textarea>
+                        </div>
+            
+                        <div class="input-group mb-3">
+                          <span class="input-group-text"><i class="fas fa-user"></i></span>
+                          <input type="text" name="MEM_ID" class="form-control  mb-0"
+                                  th:value="${dto.MEM_ID}"
+                                  placeholder="작성자" readonly>
+                        </div>
+
+                      </form>
+                    </div><!--end card body-->
+                  </div><!--end card-->
+                </div><!-- end col-->
+              </div><!-- end row-->
+              <!-- 첨부 파일 섬네일을 보여줄 부분 -->
+              <div class="col">
+                <div class="card" th:if="${dto.fileNames != null && dto.fileNames.size() > 0}">
+                    <img class="card-img-top" th:each="fileName : ${dto.fileNames}" th:src="|/club/view/${fileName}|"/>
+                </div>
+              </div>
+              <div class="my-4">
+                <div class="float-end">
+                  <a th:href="@{/club/club_board(clubCode=${dto.CLUB_CODE},type='ALL')}" class="text-decoration-none">
+                    <button class="btn btn-primary submitBtn">목록</button>
+                  </a>
+                  <a th:href="@{/club/club_board_modify(clubCode=${dto.CLUB_CODE},boardNo=${dto.BOARD_NO})}" class="text-decoration-none">
+                    <button th:if="${#authentication.principal.username == dto.MEM_ID}" class="btn btn-secondary">수정</button>
+                  </a>
+                </div>
+              </div>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                  <div class="my-4 ">
+                      <button class="btn btn-info  addReplyBtn">댓글 달기</button>
+                  </div>
+                  <ul class="list-group replyList">
+                  </ul>
+              </div>
+            </div>
+          <div class="row mt-3">
+              <div class="col">
+                  <ul class="pagination replyPaging">
+                  </ul>
+              </div>
+          </div>   	
+          
+          <div class="modal registerModal" tabindex="-1">
+               <div class="modal-dialog">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <h5 class="modal-title">댓글 등록</h5>
+                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                       </div>
+                       <div class="modal-body">
+                           <div class="input-group mb-3">
+                               <span class="input-group-text"><i class="fas fa-keyboard"></i></span>
+                               <input type="text" class="form-control replyText mb-0" >
+                           </div>
+                           <div class="input-group mb-3">
+                               <span class="input-group-text"><i class="fas fa-user"></i></span>
+                               <input type="text" name="MEM_ID" class="form-control  mb-0 replyer"
+                                  th:value="${#authentication.principal.username}"
+                                  placeholder="작성자" readonly>
+                           </div>
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-primary registerBtn">등록</button>
+                           <button type="button" class="btn btn-outline-dark closeRegisterBtn" >닫기</button>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <!-- end regist modal -->	
+          
+           <div class="modal modifyModal" tabindex="-1">
+               <div class="modal-dialog">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <h5 class="modal-title replyHeader"></h5>
+                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                       </div>
+                       <div class="modal-body">
+                           <div class="input-group mb-3">
+                               <span class="input-group-text"><i class="fas fa-keyboard"></i></span>
+                               <input type="text" class="form-control modifyText mb-0" >
+                           </div>
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-primary modifyBtn">수정</button>
+                           <button type="button" class="btn btn-danger removeBtn">삭제</button>
+                           <button type="button" class="btn btn-outline-dark closeModifyBtn">닫기</button>
+                       </div>
+                   </div>
+               </div>
+           </div> <!--modifyModal -->	
+        </main>
+        <div th:insert="~{layouts/footer :: footer}"></div>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/gd.js"></script>
+</body>
+<script layout:fragment="script" th:inline="javascript">
+	const boardNo = /*[[${dto.BOARD_NO}]]*/''
+	const clubCode = /*[[${dto.CLUB_CODE}]]*/''
+	const currentUser = /*[[${#authentication.principal.username}]]*/'';
+
+	const replyList = document.querySelector('.replyList')  // 댓글목록 DOM
+	const replyPaging = document.querySelector('.replyPaging') // 페이지목록 DOM
+
+	// 댓글목록출력
+	function printList(dtoList) {
+		let str = ''
+		if(dtoList && dtoList.length > 0) {
+			for(const dto of dtoList) {
+				str += `<li class="list-group-item d-flex replyItem">
+					<span class="col-2">${dto.replyNo}</span>
+					<span class="col-6" data-rno="${dto.replyNo}">${dto.boardText}</span>
+					<span class="col-2">${dto.memId}</span>
+				</li>`
+			}
+		}
+		replyList.innerHTML = str
+	}
+	
+	// 페이지목록출력
+	function printPage(data) {
+		if(data.total == 0){
+			return
+		}
+
+		// pagination
+		let pageStr = '';
+		
+		if(data.prev) {
+			 pageStr += `<li class="page-item"><a class="page-link" data-page="${data.start-1}">Prev</a></li>`
+		}
+		
+		for(let i=data.start;i<=data.end;i++) {							
+			pageStr += `<li class="page-item ${i == data.page?"active":""} "><a class="page-link" data-page="${i}">${i}</a></li>`
+		}
+		
+		if(data.next) {
+			 pageStr += `<li class="page-item"><a class="page-link" data-page="${data.end+1}">Next</a></li>`
+		}
+		
+		replyPaging.innerHTML = pageStr
+	}
+	
+
+	function printReplies(boardNo, clubCode, page, size, goLast) {
+		getList({boardNo, clubCode, page, size, goLast})
+		.then(
+			data => {
+				console.log(data);
+				printList(data.dtoList)  // 댓글목록처리
+				printPage(data)          // 페이지처리 
+			}
+		).catch(
+			e => console.log(e)
+		)
+	}
+
+	printReplies(boardNo, clubCode, 1, 3, true)
+
+	// 댓글등록(모달창)
+	const registerModal = new bootstrap.Modal(document.querySelector('.registerModal'))
+	const registerBtn = document.querySelector('.registerBtn')
+	const replyText = document.querySelector('.replyText')
+	const replyer = document.querySelector('.replyer')
+	const closeRegisterBtn = document.querySelector('.closeRegisterBtn')
+	
+	document.querySelector('.addReplyBtn').addEventListener('click', function(e) {
+		registerModal.show()
+	}, false)
+	
+	document.querySelector('.closeRegisterBtn').addEventListener('click', function(e) {
+		registerModal.hide()
+	}, false)
+	
+	document.querySelector('.registerBtn').addEventListener('click', function(e) {
+		const replyObj = {
+			boardNo: boardNo,
+			clubCode: clubCode,
+			boardText: replyText.value, 
+			memId: replyer.value
+		}
+		
+		addReply(replyObj).then(
+			result => {
+				registerModal.hide()
+				replyText.value = ''
+				printReplies(boardNo, clubCode, 1, 3, true) // 댓글목록갱신
+			}
+		).catch(
+			e => { alert("에러발생... ")}
+		)
+	}, false)
+	
+	
+	// 페이징처리
+	let page = 1
+	let size = 3
+	
+	replyPaging.addEventListener('click', function(e) {
+		
+		e.preventDefault()
+		e.stopPropagation()
+		
+		const target = e.target
+		
+		if(!target || target.tagName != 'A') {
+			return
+		}
+		
+		const pageNum = target.getAttribute("data-page")
+		page = pageNum
+		printReplies(boardNo, clubCode, page, size, false)
+		
+	}, false)
+	
+	// 댓글수정(모달창)
+	const modifyModal = new bootstrap.Modal(document.querySelector('.modifyModal'))
+	const replyHeader = document.querySelector('.replyHeader')
+	const modifyText = document.querySelector('.modifyText')
+	const modifyBtn = document.querySelector('.modifyBtn')
+	const removeBtn = document.querySelector('.removeBtn')
+	const closeModifyBtn = document.querySelector('.closeModifyBtn')
+
+	let hasAuth = false; // 댓글작성자와 currentUser 인지 여부
+	
+	replyList.addEventListener('click', function(e) {
+		
+		e.preventDefault()
+		e.stopPropagation()		
+		
+		const target = e.target
+
+		if(!target || target.tagName != 'SPAN') {
+			return
+		}	
+		
+		const replyNo = target.getAttribute("data-rno")
+		
+		if(!replyNo) {
+			return
+		}
+		
+		getReply(boardNo, clubCode, replyNo).then(reply => {
+			replyHeader.innerHTML = reply.replyNo
+			modifyText.value = reply.boardText
+			modifyModal.show()
+
+			hasAuth = currentUser === reply.memId;
+			if(!hasAuth){
+				modifyBtn.hidden = true;
+				modifyText.readOnly = true;
+				removeBtn.hidden = true;
+			} else{
+				modifyBtn.hidden = false;
+				modifyText.readOnly = false;
+				removeBtn.hidden = false;
+			}
+
+		}).catch(e => {
+			alert("에러발생!!!")
+		})	
+		
+	}, false)
+	
+	
+	modifyBtn.addEventListener('click', function(e) {	
+		
+		const replyObj = {
+			boardNo: boardNo,
+			clubCode: clubCode,
+			replyNo: replyHeader.innerHTML, 
+			boardText: modifyText.value, 
+		}	
+		
+		modifyReply(replyObj).then(
+			result => {
+				replyText.value = ''
+				modifyModal.hide()
+				printReplies(boardNo, clubCode, page, size, false)		
+			}).catch(
+				e => { alert("댓글수정실패!!!")
+		})		
+	}, false)		
+	
+	removeBtn.addEventListener('click', function(e) {
+		
+		removeReply(clubCode, boardNo, replyHeader.innerHTML).then(
+			result => {
+				alert(result.replyNo + " 댓글삭제성공!!")
+				replyText.value = ''
+				modifyModal.hide()
+				// page = 1
+				printReplies(boardNo, clubCode, page, size) // 원래페이지	
+		}).catch(
+			e => {
+				alert("댓글삭제실패!!!")	
+		})
+		
+	}, false)		
+	
+	closeModifyBtn.addEventListener('click', function(e) {
+		modifyModal.hide()	
+	}, false)		
+</script>
+</html>

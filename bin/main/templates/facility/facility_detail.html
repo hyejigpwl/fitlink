@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+	<title>시설상세</title>
+	<!-- 공통 css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+		integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+	<!-- Linking CSS files -->
+	<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+	<link rel="stylesheet" th:href="@{/css/detail_yj.css}" />
+
+	<!--flatpickr -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+	<!-- 공통 js -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+	<!--flatpickr -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+
+	<style>
+		/* 폼 스타일 */
+		.booking-form {
+			width: 100%;
+			/* 반응형 너비 */
+			padding: 20px;
+			/* 내부 여백 */
+			background-color: #f8f9fa;
+			/* 연한 회색 배경 */
+			border-radius: 10px;
+			/* 모서리 둥글게 */
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			/* 그림자 효과 */
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		option[value=""][disabled] {
+			display: none
+		}
+
+		.form-group label {
+			font-weight: bold;
+			display: inline-block;
+			vertical-align: top;
+		}
+
+		.form-group span {
+			display: inline-block;
+			color: #333;
+			font-size: 14px;
+			line-height: 1.5;
+			white-space: pre-line;
+			/* 줄바꿈 유지 */
+		}
+
+		/* .booking-form button {
+	background-color: #007bff; 
+	color: white;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px; 
+	cursor: pointer;
+} */
+
+		/* .booking-form button:hover {
+	background-color: #0056b3; 
+} */
+
+		/* Carousel 컨테이너 높이 설정 */
+		.carousel-inner {
+			max-height: 500px;
+			/* 원하는 고정 높이 */
+			overflow: hidden;
+			/* 초과 이미지를 숨김 */
+			display: flex
+		}
+
+		/* Carousel 이미지 스타일 */
+		.carousel-item img {
+			width: 100%;
+			/* 컨테이너 너비에 맞춤 */
+			height: 100%;
+			/* 컨테이너 높이에 맞춤 */
+			/* 이미지 비율을 유지하며 컨테이너 내에 맞춤 */
+			/*  object-position: center; */
+			/* 이미지를 중앙에 위치  */
+		}
+
+		/* 마이페이지 팝업 */
+		/* 어두운 배경 오버레이 */
+		#overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: rgba(0, 0, 0, 0.5);
+			/* 반투명 검정 */
+			z-index: 999;
+			/* fitpayCharge 아래 */
+			display: none;
+			/* 기본적으로 숨김 */
+		}
+
+		.popup_style {
+			display: none;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: #fff;
+			padding: 30px;
+			border-radius: 20px;
+			z-index: 1000;
+		}
+	</style>
+</head>
+<!-- Header -->
+<div th:insert="~{layouts/header :: header}"></div>
+
+<body>
+	<div class="container my-4">
+		<a th:href="@{/facility/main}" class="more-link"> ◀시설예약목록 </a>
+		<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-indicators">
+				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+					aria-current="true" aria-label="Slide 1" th:if="${facility.facilityImage1 != null}"></button>
+				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+					aria-label="Slide 2" th:if="${facility.facilityImage2 != null}"></button>
+				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+					aria-label="Slide 3" th:if="${facility.facilityImage3 != null}"></button>
+				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+					aria-label="Slide 4" th:if="${facility.facilityImage4 != null}"></button>
+			</div>
+
+			<div class="carousel-inner">
+				<div class="carousel-item active" data-bs-interval="5000" th:if="${facility.facilityImage1 != null}">
+					<img th:src="|/view/${facility.facilityImage1}|" id="facilityImage1" alt="Product Image">
+				</div>
+				<div class="carousel-item" data-bs-interval="5000" th:if="${facility.facilityImage2 != null}">
+					<img th:src="|/view/${facility.facilityImage2}|" id="facilityImage2" alt="Product Image">
+				</div>
+				<div class="carousel-item" data-bs-interval="5000" th:if="${facility.facilityImage3 != null}">
+					<img th:src="|/view/${facility.facilityImage3}|" id="facilityImage3" alt="Product Image">
+				</div>
+				<div class="carousel-item" data-bs-interval="5000" th:if="${facility.facilityImage4 != null}">
+					<img th:src="|/view/${facility.facilityImage4}|" id="facilityImage4" alt="Product Image">
+				</div>
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+				data-bs-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+				data-bs-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Next</span>
+			</button>
+		</div>
+
+		<div style="padding-top: 10px;">
+			<!-- 예약 form start  -->
+			<form class="booking-form" action="/facility/submit-booking" method="POST">
+
+				<div th:if="${facility.facilityIsOnlyClub}" style="color: red; font-weight: bold;">
+					<span>✅ 해당 시설은 클럽장만 예약할 수 있는 시설입니다</span>
+				</div>
+				<br />
+
+				<div class="form-group resInfo">
+					<label for="memId" class="changeToClub">예약자ID: </label> <span id="memId" name="memId"
+						th:text="${userId}"></span> <input type="text" id="memId" name="memId" class="blind"
+						th:value="${userId}"> <input type="text" id="senderId" class="blind" name="senderId"
+						th:value="${userId}"> <input type="text" class="blind" id="receiverId" name="receiverId"
+						th:value="${facility.memId}"> <input type="text" class="blind" name="createDate">
+
+
+				</div>
+
+				<div class="form-group">
+					<label for="reservationDate">예약 날짜</label> <input id="reservationDate" name="reservationDate"
+						type="date" onchange="dateChange(this.value)" placeholder="날짜를 선택하세요" required>
+				</div>
+
+				<div class="form-group">
+					<input type="hidden" name="isOnlyClub" th:value="${facility.facilityIsOnlyClub}"> <label
+						for="reservationTime">예약 시간</label> <select id="reservationStartTime"
+						name="reservationStartTime" type="time" required disabled></select> <select
+						id="reservationEndTime" name="reservationEndTime" type="time" required disabled></select>
+					<!-- 옵션이 JavaScript로 동적으로 추가됩니다 -->
+
+					<label id="countLabel" for="count">예약 인원</label>
+					<input type="number" id="count" name="count" min="0" placeholder="예약 인원을 입력해주세요." required>
+				</div>
+
+
+				<div class="form-group">
+					<label for="price">시간 당 이용 요금(1hour):</label> <span th:text="${facility.formattedPrice}"></span>원
+					<input type="number" id="price" class="blind" name="price" th:value="${facility.price}">
+				</div>
+				<div class="form-group">
+					<label for="totalPrice">최종 결제 금액:</label> <span class="totalPrice">0</span>원
+				</div>
+				<hr />
+				<!-- 결제 옵션 -->
+				<h4>결제하기</h4>
+				<div id="paymentOptions">
+					<label for="memMoney" class="form-label me-2">FITPAY 잔액:</label>
+					<span th:text="${#numbers.formatInteger(#authentication.principal.memMoney, 0, 'COMMA')}"
+						id="memMoney"></span>원
+					<input type="number" id="memMoney_ip" name="memMoney" class="blind">
+
+					<button class="btn btn-success" id="fitpayCharge" type="button">FITPAY
+						충전하기</button>
+				</div>
+				<div>
+					<input type="text" id="useFitpay" class="form-control me-2" placeholder="사용한 금액" min="0"
+						style="width: 150px; display: inline-block" disabled>
+
+					<!--<button class="btn btn-secondary" id="useFitpayButton" type="button">사용</button>-->
+					<button class="btn btn-primary" id="useFullAmount" type="button">전액
+						사용</button>
+					<button class="btn btn-danger" id="deleteAmount" type="button">취소</button>
+
+				</div>
+
+
+				<!-- 어두운 배경 오버레이 추가 -->
+				<div id="overlay"></div>
+				<!-- 숨겨진 FITPAY 충전 영역 -->
+				<div id="fitpayOptions" class="popup_style">
+					<h5>FITPAY 충전</h5>
+					<div class="d-flex align-items-center mb-3">
+
+						<label for="chargeAmount" class="form-label me-2">충전 금액:</label> <!-- 가짜 입력 필드 (보여지는 부분) -->
+						<input type="text" id="chargeAmountDisplay" class="form-control me-2" placeholder="금액 입력"
+							style="width: 150px;">
+
+						<!-- 진짜 입력 필드 (숨어있는 부분, 서버로 전송) -->
+						<input type="number" id="chargeAmount" name="chargeAmount" class="form-control me-2"
+							style="width: 150px; display:none">
+					</div>
+
+					<div>
+						<button class="btn btn-warning charge-btn" type="button" id="chargeBtn_kakao"
+							data-pg="kakaopay">카카오페이</button>
+						<!-- <button class="btn btn-success charge-btn" type="button"
+							id="chargeBtn_naver" data-pg="naverpay">네이버페이</button> -->
+						<button class="btn btn-danger charge-btn" type="button" id="chargeBtn_payco"
+							data-pg="payco">페이코</button>
+						<!-- <button class="btn btn-danger charge-btn" id="chargeBtn_inisis" data-pg="html5_inicis.TEST"
+						type="button">KG이니시스</button> -->
+						<!-- kakaopay, payco제외하고는 https환경에서만 작동됨으로 뺌... -->
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="totalPrice">최종 결제 금액:</label> <span class="totalPrice">0</span>원
+					<input type="hidden" id="amount" name="amount" value="0">
+				</div>
+
+				<div class="form-group mt-3">
+					<label for="totalPaid">낸 금액:</label> <span id="totalPaid">0</span>원
+				</div>
+
+				<div class="form-group">
+					<label for="remainingAmount">내야할 금액:</label> <span id="remainingAmount">0</span>원
+				</div>
+				<button th:if="${!facility.facilityIsOnlyClub}" type="submit" class="btn btn-primary">예약하기</button>
+				<button th:if="${facility.facilityIsOnlyClub && isClubOwner}" id="reserButton" type="submit"
+					class="btn btn-primary">예약하기</button>
+				<hr />
+
+				<!-- 시설명  -->
+				<div class="form-group">
+					<label for="facilityName">시설명:</label> <span th:text="${facility.facilityName}"></span> <input
+						type="hidden" id="facilityName" name="facilityName" th:value="${facility.facilityName}"> <input
+						type="hidden" id="facilityCode" name="facilityCode" th:value="${facility.facilityCode}">
+				</div>
+				<!-- 시설 주소  -->
+				<div class="form-group">
+					<label for="facilityAddress">시설 주소: </label> <span th:text="${facility.facilityAddress}"></span>
+					<!-- 지도 버튼 -->
+					<button type="button" class="btn btn-success" style=" border: none;" data-bs-toggle="modal"
+						data-bs-target="#mapModal">
+						<i class="bi bi-geo-alt"></i></button>
+
+					<!-- 모달창 -->
+					<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel"
+						aria-hidden="true">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="mapModalLabel">시설 위치</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"
+										aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<!-- 지도를 표시할 div -->
+									<div id="map" style="width: 100%; height: 400px;"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="facilityDescription">이용안내: </label> <span style="white-space: pre-line;"
+						th:text="${facility.facilityDescription}"></span>
+				</div>
+				<!-- 시설 운영 시간 -->
+				<div class="form-group">
+					<label for="facilityTime">운영 시간:</label> <span
+						th:text="${facility.facilityStartTime + ' ~ ' + facility.facilityEndTime}"></span>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+
+
+	<!-- Footer -->
+	<div th:insert="~{layouts/footer :: footer}"></div>
+	<script type="text/javascript"
+		src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3cd1cbb83ed8cd66805a1d9f6fd57a32"></script>
+	<script>
+		// 날짜 선택 Flatpickr 초기화
+		flatpickr("#reservationDate", {
+			dateFormat: "Y-m-d", // 날짜 형식 (YYYY-MM-DD)
+			minDate: new Date().fp_incr(1), // 오늘 이후만 선택 가능
+			allowInput: true, // 사용자가 직접 입력 가능
+			locale: "ko" // 한국어 설정
+		});
+
+	</script>
+
+	<script th:inline="javascript">
+
+		// 서버에서 전달받은 운영 시간 (Thymeleaf 변수 사용)
+		const facilityStartTime =  /*[[${facility.facilityStartTime}]]*/"9:00";	//서버에서 받지 못했을 때 기본 값 9:00
+		const facilityEndTime =  /*[[${facility.facilityEndTime}]]*/"22:00"; //서버에서 받지 못했을 때 기본 값 22:00
+		const pricePerHour = parseFloat(/*[[${facility.price}]]*/ "10000");
+		const pricePerHourFormatted = pricePerHour.toLocaleString();
+		let memMoney = parseFloat(/*[[${#authentication.principal.memMoney}]]*/ "10000"); // 사용자 잔액
+		let memMoneyFormatted = memMoney.toLocaleString();
+		let totalPaid = 0;
+		let totalPaidFormatted = totalPaid.toLocaleString();
+		const isClubOwner = /*[[${isClubOwner}]]*/"";
+		const facilityIsOnlyClub = /*[[${facility.facilityIsOnlyClub}]]*/"";
+		const facilityCode = /*[[${facility.facilityCode}]]*/"";
+
+		// 시간 선택
+		let reservation;
+		async function getReservationTime(value) {
+			const reservationDate = value;
+			const response = await axios.get(`/facility/getReservationTimeList/${facilityCode},${reservationDate}`)
+			return response.data
+		}
+
+		function dateChange(value) {
+			getReservationTime(value).then(data => {
+				generateReservationStartTimes(facilityStartTime, facilityEndTime);
+				const startSelect = document.getElementById("reservationStartTime");
+				const endSelect = document.getElementById("reservationEndTime");
+				const resDate = document.getElementById("reservationDate");
+				startSelect.disabled = false;
+				endSelect.disabled = false;
+				const childs = startSelect.childNodes
+				data.forEach(reservation => {
+					childs.forEach(element => {
+						const elementTime = new Date(`${resDate.value}T${element.value}`);
+						const startTime = new Date(`${resDate.value}T${reservation.reservationStartTime}`)
+						const endTime = new Date(`${resDate.value}T${reservation.reservationEndTime}`)
+						if (elementTime.getTime() == startTime.getTime()) element.disabled = true;
+						if (elementTime > startTime && elementTime < endTime) element.disabled = true;
+					});
+				});
+				reservation = data;
+			})
+		}
+
+		// 최종 결제 금액 계산
+		function calculateTotalPrice() {
+			const startTime = document.getElementById("reservationStartTime").value;
+			const endTime = document.getElementById("reservationEndTime").value;
+
+			if (startTime && endTime) {
+				const start = new Date(`1970-01-01T${startTime}`);
+				const end = new Date(`1970-01-01T${endTime}`);
+				const duration = (end - start) / (1000 * 60 * 60); // 시간 차 계산
+				const totalPrice = duration * pricePerHour;
+
+				// 천 단위 콤마 추가
+				const formattedPrice = totalPrice.toLocaleString();
+
+				document.querySelectorAll(".totalPrice").forEach((element) => {
+					element.textContent = formattedPrice;
+				});
+				document.getElementById("remainingAmount").textContent = formattedPrice;
+
+				return totalPrice;
+			}
+			return 0;
+		}
+
+
+		document.getElementById("reservationStartTime").addEventListener("change", function () {
+			document.querySelectorAll(".totalPrice").forEach((element) => {
+				element.textContent = pricePerHourFormatted;
+			});
+		});
+		document.getElementById("reservationEndTime").addEventListener("change", calculateTotalPrice, calculateAmountToPay);
+
+		// 내야할 금액 계산
+		function calculateAmountToPay() {
+			document.getElementById("remainingAmount").textContent -= totalPaid;
+		};
+		document.getElementById("remainingAmount").textContent = pricePerHourFormatted;
+
+
+		// 금액 입력시 천단위
+		const useFitpay = document.querySelector('#useFitpay');
+		useFitpay.addEventListener('keyup', function (e) {
+			let value = e.target.value;
+
+			// 입력값에서 쉼표 제거 후 숫자로 변환
+			value = value.replaceAll(',', '');
+			if (isNaN(value) || value === '') {
+				useFitpay.value = '';
+				return;
+			}
+			const numericValue = parseInt(value, 10);
+			useFitpay.value = numericValue.toLocaleString('ko-KR');
+
+		});
+
+		const displayInput = document.getElementById("chargeAmountDisplay");
+		const realInput = document.getElementById("chargeAmount");
+
+		displayInput.addEventListener("input", function () {
+			let value = displayInput.value.replaceAll(',', ''); // 쉼표 제거
+
+			if (isNaN(value) || value === '') {
+				realInput.value = "";
+				displayInput.value = "";
+				return;
+			}
+
+			const numericValue = parseInt(value, 10);
+
+			// 실제 input에는 숫자 값 저장 (쉼표 없음)
+			realInput.value = numericValue;
+
+			// 가짜 input에는 쉼표 포함된 값 표시
+			displayInput.value = numericValue.toLocaleString('ko-KR');
+		});
+
+
+		// 금액 초기화 함수
+		function reset() {
+			const useFitpayInput = parseFloat(document.getElementById("useFitpay").value);
+
+			memMoney = memMoney + totalPaid;
+			memMoneyFormatted = memMoney.toLocaleString();
+			totalPaid = 0;
+			const totalPrice = calculateTotalPrice(); // 최종 금액 다시 계산
+
+			const remainingAmount = totalPrice;
+			const remainingAmountFormatted = totalPrice.toLocaleString();
+
+			// '전액 사용' 버튼 활성/비활성화
+			const useFullAmountButton = document.getElementById("useFullAmount");
+			useFullAmountButton.disabled = false; // 버튼 활성화
+
+			// UI 초기화
+			document.getElementById("memMoney_ip").value = memMoney;
+			document.getElementById("memMoney").textContent = memMoneyFormatted;
+			document.getElementById("totalPaid").textContent = totalPaid;
+			document.getElementById("remainingAmount").textContent = remainingAmountFormatted;
+			document.getElementById("useFitpay").value = "";
+			return;
+
+		}
+
+		// 취소 버튼 누를시, 다시 원상복귀
+		document.getElementById("deleteAmount").addEventListener("click", reset);
+
+
+		// '사용' 버튼 클릭 이벤트
+		/*document.getElementById("useFitpayButton").addEventListener("click", () => {
+			// reset();
+			const useFitpayInput = parseFloat(document.getElementById("useFitpay").value.replaceAll(',', ''));
+
+			if (isNaN(useFitpayInput) || useFitpayInput < 0) {
+				alert("올바른 금액을 입력해주세요.");
+				return;
+			}
+
+
+			if (useFitpayInput > memMoney) {
+				alert("잔액이 부족합니다.");
+				return;
+			}
+
+			// 값 업데이트
+			memMoney -= useFitpayInput;
+			totalPaid += useFitpayInput;
+			memMoneyFormatted = memMoney.toLocaleString();
+			totalPaidFormatted = totalPaid.toLocaleString();
+
+			const totalPrice = calculateTotalPrice(); // 최종 금액 다시 계산
+			const remainingAmount = Math.max(totalPrice - totalPaid, 0);
+			const remainingAmountFormatted = remainingAmount.toLocaleString();
+			document.getElementById("memMoney_ip").value = memMoney;
+
+
+			// UI 업데이트
+			document.getElementById("memMoney").textContent = memMoneyFormatted;
+			document.getElementById("totalPaid").textContent = totalPaidFormatted;
+			document.getElementById("useFitpay").value = "";
+			document.getElementById("remainingAmount").textContent = remainingAmountFormatted;
+		});*/
+
+
+		// '전액 사용' 버튼 클릭 이벤트
+		document.getElementById("useFullAmount").addEventListener("click", () => {
+			// reset();
+			document.getElementById("useFitpay").value = calculateTotalPrice();
+			// const useFitpayInput = parseFloat(document.getElementById("useFitpay").value);
+			const useFitpayInput = Math.max(calculateTotalPrice() - totalPaid, 0);
+
+			if (isNaN(useFitpayInput) || useFitpayInput < 0) {
+				alert("올바른 금액을 입력해주세요.");
+				return;
+			}
+
+
+			if (useFitpayInput > memMoney) {
+				alert("잔액이 부족합니다.");
+				return;
+			}
+
+			// 값 업데이트
+			memMoney -= useFitpayInput;
+			memMoneyFormatted = memMoney.toLocaleString();
+			totalPaid += useFitpayInput;
+			const remainingAmount = Math.max(calculateTotalPrice() - totalPaid, 0);
+			document.getElementById("memMoney_ip").value = memMoney;
+
+			// '전액 사용' 버튼 활성/비활성화
+			const useFullAmountButton = document.getElementById("useFullAmount");
+			if (memMoney <= 0 || memMoney > totalPaid) {
+				useFullAmountButton.disabled = true; // 버튼 비활성화
+			} else {
+				useFullAmountButton.disabled = false; // 버튼 활성화
+			}
+
+			// UI 업데이트
+			document.getElementById("memMoney").textContent = memMoneyFormatted;
+			document.getElementById("totalPaid").textContent = calculateTotalPrice().toLocaleString();
+			document.getElementById("remainingAmount").textContent = 0;
+		});
+
+
+		// 운영 시간 기반으로 예약 가능한 시간 생성 <예약 시작 시간>
+		function generateReservationStartTimes(startTime, endTime) {
+			const startSelect = document.getElementById("reservationStartTime");
+			const start = new Date(`1970-01-01T${startTime}`);
+			const end = new Date(`1970-01-01T${endTime}`);
+			const interval = 60; // 60분 간격
+			startSelect.innerHTML = ""; // 기존 옵션 제거
+			const option = document.createElement("option");
+			option.value = "";
+			option.textContent = "시간 선택";
+			option.disabled = true;
+			option.selected = true;
+			startSelect.appendChild(option);
+
+
+			while (start < end) {
+				const timeString = start.toTimeString().slice(0, 5); // HH:MM 형식
+				const option = document.createElement("option");
+				option.value = timeString;
+				option.textContent = timeString;
+				startSelect.appendChild(option);
+				start.setMinutes(start.getMinutes() + interval); // 60분 간격으로 증가
+			}
+		}
+
+		// 운영 시간 기반으로 예약 가능한 시간 생성 <예약 종료 시간>
+		function generateReservationEndTimes(selectedStartTime, endTime, reservations) {
+			const endSelect = document.getElementById("reservationEndTime");
+			const start = new Date(`1970-01-01T${selectedStartTime}`);
+			const end = new Date(`1970-01-01T${endTime}`);
+			const interval = 60; // 60분 간격
+			endSelect.innerHTML = ""; // 기존 옵션 제거
+			const option = document.createElement("option");
+			option.value = "";
+			option.textContent = "시간 선택";
+			option.disabled = true;
+			option.selected = true;
+			endSelect.appendChild(option);
+
+
+			while (start < end) {
+				start.setMinutes(start.getMinutes() + interval); // 60분 추가
+				// if (start >= end) break; // 종료 시간이 운영 시간을 초과하면 중지
+
+				const timeString = start.toTimeString().slice(0, 5); // HH:MM 형식
+				const option = document.createElement("option");
+				option.value = timeString;
+				option.textContent = timeString;
+				endSelect.appendChild(option);
+			}
+			const resDate = document.getElementById("reservationDate");
+			const childs = endSelect.childNodes
+			const startSelectTime = new Date(`${resDate.value}T${selectedStartTime}`);
+			for (let i = 0; i < reservations.length; i++) {
+				childs.forEach(element => {
+					const elementTime = new Date(`${resDate.value}T${element.value}`);
+					const startTime = new Date(`${resDate.value}T${reservations[i].reservationStartTime}`)
+					const endTime = new Date(`${resDate.value}T${reservations[i].reservationEndTime}`)
+					if (elementTime > startTime && elementTime < endTime) element.disabled = true;
+				});
+			};
+		}
+
+		// 이벤트 연결
+		document.getElementById("reservationStartTime").addEventListener("change", function () {
+			const selectedStartTime = this.value; // 선택된 시작 시간
+			generateReservationEndTimes(selectedStartTime, facilityEndTime, reservation); // 종료 시간 생성
+		});
+
+		// 초기 시간 목록 생성
+		generateReservationStartTimes(facilityStartTime, facilityEndTime);
+		document.getElementById("reservationStartTime").dispatchEvent(new Event("change"));
+
+
+
+		// FITPAY 충전하기 버튼 클릭 이벤트
+
+		document.getElementById("fitpayCharge").addEventListener("click", function () {
+			const fitpayOptions = document.getElementById("fitpayOptions");
+			const overlay = document.getElementById("overlay");
+
+			if (fitpayOptions.style.display === "none" || !fitpayOptions.style.display) {
+				// fitpayOptions 표시 및 배경 어둡게
+				fitpayOptions.style.display = "block";
+			} else {
+				// fitpayOptions 숨김 및 배경 밝게
+				fitpayOptions.style.display = "none";
+				overlay.style.display = "none";
+			}
+		});
+
+		// 오버레이 클릭 시 fitpayOptions 닫기
+		document.getElementById("overlay").addEventListener("click", function () {
+			document.getElementById("fitpayOptions").style.display = "none";
+			this.style.display = "none";
+			realInput.value = "";
+			displayInput.value = "";
+		});
+
+
+
+		$(function () {
+			$('.charge-btn').off("click").on("click", function (event) {
+				event.preventDefault(); // 기본 동작 방지
+
+				var IMP = window.IMP; // 아임포트 객체
+				IMP.init('imp85150653'); // 아임포트 가맹점 식별코드
+
+				var money = parseFloat($('#chargeAmount').val());
+				if (isNaN(money) || money <= 0) {
+					alert("충전 금액을 올바르게 입력하세요.");
+					return;
+				}
+
+				// 클릭된 버튼에 따라 PG 설정
+				var pgProvider = $(this).attr('data-pg');
+				if (!pgProvider || (pgProvider !== "html5_inicis" && pgProvider !== "kakaopay" && pgProvider !== "payco")) {
+					alert("올바른 PG 값을 설정하세요.");
+					return;
+				}
+
+				// 이메일 및 전화번호 처리
+				var buyerEmail = '/*[[${#authentication.principal.memEmail}]]*/';
+				buyerEmail = buyerEmail.replace(/[^\w@.-]/g, "").trim();
+
+				var buyertel = '/*[[${#authentication.principal.memTell}]]*/';
+				buyertel = buyertel.replace(/[^\d-]/g, "").trim();
+
+				// 결제 요청
+				IMP.request_pay({
+					pg: pgProvider,
+					pay_method: 'card',
+					merchant_uid: 'merchant_' + new Date().getTime(),
+					name: 'FITPAY 충전',
+					amount: money,
+					buyer_email: buyerEmail,
+					buyer_name: '/*[[${#authentication.principal.memName}]]*/',
+					buyer_tel: buyertel,
+					buyer_addr: '/*[[${#authentication.principal.memAddress}]]*/',
+					buyer_postcode: '/*[[${#authentication.principal.memZipcode}]]*/'
+				}, function (rsp) {
+					if (rsp.success) {
+						// alert("결제가 성공했습니다!");
+						memMoney += money; // 충전 금액 추가
+						$("#memMoney_ip").val(memMoney);
+						$("#memMoney").text(memMoney.toLocaleString());
+
+						// 서버로 충전 금액 전송
+						$.ajax({
+							type: "GET",
+							url: "/member/charge/point",
+							data: {"amount": memMoney, "plusPoint": money},
+							success: function (response) {
+								console.log("충전 성공: ", response);
+								$("#chargeAmount").val("");
+								alert("충전이 완료되었습니다. 충전 금액: " + money + "원");
+								// 팝업 닫기
+								$("#fitpayOptions").hide();
+								$("#overlay").hide();
+							},
+							error: function (xhr, status, error) {
+								console.error("충전 실패: ", error);
+								alert("충전 중 문제가 발생했습니다.");
+							}
+						});
+					} else {
+						console.error("결제 실패:", rsp.error_msg);
+						alert(`결제가 실패했습니다. 이유: ${rsp.error_msg}`);
+					}
+				});
+			});
+
+
+
+
+		});
+
+
+		async function getClubList() {
+			const response = await axios.get(`/club/ownerClubList`)
+			return response.data
+		}
+
+
+		if (facilityIsOnlyClub == true && isClubOwner == true) {
+			let str = "";
+			getClubList().then(data => {
+				if (data.length === 0) {
+					str = `<p>생성한 클럽이 없습니다.</p>`;
+				} else {
+					document.querySelector(".changeToClub").textContent = "예약할 클럽";
+					str = `<select class="custom-select" id="inputGroupSelect01" name="clubCode" style="text-align: center;">`
+					data.forEach(club => {
+						str += `<option selected value="${club.clubCode}">${club.clubName}</option>`
+					});
+					str += `</select>`
+
+				}
+				document.querySelector("#memId").classList.add("blind");
+				document.querySelector(".resInfo").innerHTML += str;
+			})
+		}
+
+		// 내야할 금액 확인 및 폼 제출 제어
+		const form = document.querySelector("form");
+
+		form.addEventListener("submit", function (event) {
+			const remainingAmount = parseFloat(document.getElementById("remainingAmount").textContent);
+
+			if (remainingAmount > 0) {
+				event.preventDefault(); // 폼 제출 방지
+				alert("내야 할 금액이 남아 있습니다. 결제를 완료해주세요.");
+			} else {
+				updateHiddenAmount(); // 숨겨진 금액 업데이트
+			}
+		});
+
+		// 최종 결제 금액을 숨겨진 input에 동적으로 복사
+		function updateHiddenAmount() {
+			const totalPriceElement = document.querySelector(".totalPrice");
+			const amountInput = document.getElementById("amount");
+			if (totalPriceElement && amountInput) {
+				amountInput.value = parseFloat(totalPriceElement.textContent) || 0; // 숫자로 변환
+			}
+		}
+
+
+
+		// 서버에서 전달받은 시설의 위도와 경도 (예: Thymeleaf로 전달)
+		const facilityLat = /*[[${facility.facilityLat}]]*/ 37.5665; // 예시 위도
+		const facilityLng = /*[[${facility.facilityLongt}]]*/ 126.9780; // 예시 경도
+
+		let map, marker;
+
+		// 모달이 열릴 때 지도 초기화
+		$('#mapModal').on('shown.bs.modal', function () {
+			if (!map) {
+				// 지도 생성
+				const mapContainer = document.getElementById('map');
+				const mapOption = {
+					center: new kakao.maps.LatLng(facilityLat, facilityLng), // 중심 좌표
+					level: 3 // 확대 레벨
+				};
+				map = new kakao.maps.Map(mapContainer, mapOption);
+
+				// 마커 생성 및 표시
+				const markerPosition = new kakao.maps.LatLng(facilityLat, facilityLng);
+				marker = new kakao.maps.Marker({
+					position: markerPosition,
+					map: map
+				});
+			} else {
+				// 지도 중심 이동 (모달 재열림 시)
+				map.setCenter(new kakao.maps.LatLng(facilityLat, facilityLng));
+			}
+		});
+
+		// 모달이 닫힐 때 지도 리사이즈 처리
+		$('#mapModal').on('hidden.bs.modal', function () {
+			if (map) {
+				kakao.maps.event.trigger(map, 'resize');
+			}
+		});
+
+
+
+
+	</script>
+
+
+</body>
+
+</html>

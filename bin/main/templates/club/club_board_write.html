@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- meta_tag include -->
+<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+<title>클럽게시글 작성</title>
+
+<!-- 공통 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css" integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" th:href="@{/css/common.css}">
+
+<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+<!-- Linking CSS files -->
+<link rel="stylesheet" th:href="@{/css/detail_hj.css}"/>
+<link rel="stylesheet" th:href="@{/css/detail_yj.css}">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" 
+   integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+   crossorigin="anonymous">
+
+<!-- 공통 js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+	<div th:insert="~{layouts/header :: header}"></div>
+	    <main class="container my-5">
+            <div class="row mt-3">
+                <div class="col">
+                  <div class="card" style="box-shadow: none; border: none;">
+                    <div class="card-header">
+                      글 작성
+                    </div>
+                    <div class="card-body">
+                      <form action="/club/board_register" method="post">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01"><i class="fas fa-pen-nib"></i></label>
+                          </div>
+                          <select class="custom-select" id="inputGroupSelect01" name="BOARD_TYPE" style="text-align: center;">
+                            <option selected value="Notice">#공지#</option>
+                            <option value="FreeBoard">자유 게시판</option>
+                            <option value="Hello">가입 인사</option>
+                            <option value="Reviews">정산&후기</option>
+                          </select>
+                        </div>
+            
+                        <div class="input-group mb-3">
+                          <span class="input-group-text"><i class="fas fa-keyboard"></i></span>
+                          <input type="hidden" name="CLUB_CODE" th:value="${param.clubCode}">
+                          <textarea class="form-control col-sm-5  mb-0" rows="5" name="BOARD_TEXT"></textarea>
+                        </div>
+            
+                        <div class="input-group mb-3">
+                          <span class="input-group-text"><i class="fas fa-user"></i></span>
+                          <input type="text" name="MEM_ID" class="form-control  mb-0"
+                                  th:value="${#authentication.principal.username}"
+                                  placeholder="작성자" readonly>
+                        </div>
+                        
+                        <div class="input-group mb-3">
+                          <span class="input-group-text"><i class="fas fa-images"></i></span>
+                          <div class="float-end uploadHidden">
+                            <button type="button" class="btn btn-primary uploadFileBtn" style="margin-left: 10px;">파일 추가</button>
+                          </div>
+                        </div>
+
+                        <div class="my-4">
+                          <div class="float-end">
+                             <button type="submit" class="btn btn-primary submitBtn">등록</button>
+                            <button type="reset" class="btn btn-secondary">새로 고침</button>
+                          </div>
+                        </div>
+                      </form>
+                    </div><!--end card body-->
+                  </div><!--end card-->
+                </div><!-- end col-->
+              </div><!-- end row-->
+              <!-- 첨부 파일 섬네일을 보여줄 부분 -->
+            <div class="row mt-3">
+                <div class="col ">
+                <div class="container-fluid d-flex uploadResult" style="flex-wrap: wrap;">
+                </div>
+                </div>
+            </div>
+
+            <!-- 첨부파일 추가를 위한 모달창 -->
+            <div class="modal uploadModal" tabindex="-1">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title">사진 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="file" name="files" class="form-control" multiple >
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-primary uploadBtn">등록</button>
+                    <button type="button" class="btn btn-outline-dark closeUploadBtn" >닫기</button>
+                    </div>
+                </div>
+                </div>
+            </div><!-- register modal -->    
+            
+        </main>
+        <div th:insert="~{layouts/footer :: footer}"></div>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/gd.js"></script>
+</body>
+<script>
+  const uploadModal = new bootstrap.Modal(document.querySelector(".uploadModal"))
+  document.querySelector(".uploadFileBtn").addEventListener("click", function(e){
+    e.stopPropagation()
+    e.preventDefault()
+    uploadModal.show()
+  }, false)
+
+  document.querySelector(".closeUploadBtn").addEventListener("click", function(e){
+    uploadModal.hide()    
+  }, false)
+
+  document.querySelector(".uploadBtn").addEventListener("click", function(e){
+    const formObj = new FormData();
+    const fileInput = document.querySelector("input[name='files']")
+    const files = fileInput.files
+
+    for (let i = 0; i < files.length; i++) {
+      if(files[i].name.includes("_")) {
+        alert("_ 문자열은 포함될 수 없습니다.");
+        return;
+      }
+      formObj.append("files", files[i]);
+    }
+
+    uploadToServer(formObj).then(result => {
+      for (const uploadResult of result) {
+        showUploadFile(uploadResult)
+      }
+      uploadModal.hide()
+    }).catch(e => {
+      uploadModal.hide()
+    })
+
+  },false)
+
+  document.querySelector(".closeUploadBtn").addEventListener("click", function(e){
+    uploadModal.hide()    
+  }, false)
+
+  const uploadResult = document.querySelector(".uploadResult")
+  function showUploadFile({uuid, fileName, link}){
+    const str =`<div class="card col-4">
+            <div class="card-header d-flex justify-content-center">
+                ${fileName}
+                <button class="btn-sm btn-danger" onclick="javascript:removeFile('${uuid}', '${fileName}', this)" >X</button>
+            </div>
+            <div class="card-body">
+                 <img src="/club/view/${link}" data-src="${uuid+"_"+fileName}" >
+            </div>
+        </div><!-- card -->`
+
+    uploadResult.innerHTML += str
+  }
+
+  function removeFile(uuid,fileName, obj){
+
+  console.log(uuid)
+  console.log(fileName)
+
+  console.log(obj)
+
+  const targetDiv = obj.closest(".card")
+
+  removeFileToServer(uuid, fileName).then(data => {
+    targetDiv.remove()
+  })
+  }
+  
+  document.querySelector(".submitBtn").addEventListener("click", function(e){
+    e.preventDefault()
+    e.stopPropagation()
+
+    const target = document.querySelector(".uploadHidden")
+    const uploadFiles = uploadResult.querySelectorAll("img")
+
+    let str = ''
+
+    for (let i = 0; i < uploadFiles.length ; i++) {
+    const uploadFile = uploadFiles[i]
+    const imgLink = uploadFile.getAttribute("data-src")
+
+    console.log(imgLink);
+    str += `<input type='hidden' name='fileNames' value="${imgLink}">`
+    }
+
+    target.innerHTML = str;
+
+
+    const formObj = document.querySelector("form");
+    formObj.submit();
+    formObj.reset();
+
+    }, false)
+</script>
+</html>

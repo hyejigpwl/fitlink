@@ -1,0 +1,28 @@
+@charset "UTF-8";
+
+span.ReservationProgressTag {
+    position: relative;
+    background-color: #ffc107;
+    color: #fff;
+    border-radius: 3px;
+     padding: 2px 7px;
+    margin-left: 10px; 
+}
+
+span.ReservationProgressTag_refuse {
+   
+    background-color: #ff5b5b;
+    color: #fff;
+    border-radius: 3px;
+     padding: 2px 7px;
+    margin-left: 10px; 
+}
+
+span.ReservationProgressTag_confirm {
+   
+    background-color: #69f34b;
+    color: #fff;
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-left: 10px; 
+}

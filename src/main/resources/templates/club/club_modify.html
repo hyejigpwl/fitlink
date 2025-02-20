@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- meta_tag include -->
+    <head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+    <title>클럽수정</title>
+
+    <!-- 공통 css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css" integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" th:href="@{/css/common.css}">
+    <!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+    <!-- Linking CSS files -->
+    <link rel="stylesheet" th:href="@{/css/detail_hj.css}"/>
+    <link rel="stylesheet" th:href="@{/css/detail_yj.css}"/>
+
+    <!-- 공통 js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+   
+</head>
+<body>
+    <div th:insert="~{layouts/header :: header}"></div>
+    
+    <main class="container main" style="margin: 15px auto 0 auto;">
+    
+        <form id="clubmodify" action="/club/modify" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="clubCode" id="clubCode" th:value="${clubdto.clubCode}"/>
+            
+            <label for="club-name">클럽명	</label>
+            	<input type="text" name="clubName" id="clubName" th:value="${clubdto.clubName}" maxlength="20"></input>
+            	
+            <label for="club-name">클럽방장</label>
+            	<input type="text" name="memId" id="memId" th:value="${#authentication.principal.memId}" readonly></input>
+
+		    <label for="club-exercise">선호 운동 코드</label>
+				<div class="exercise-container">
+				    <div class="exercise-selection">
+				       <input type="hidden" id="clubExercise" name="clubExercise" th:value="${clubdto.clubExercise}" />				
+					        <button type="button" onclick="selectExercise(this)" value="EXE_BADMINTON">배드민턴</button>
+					        <button type="button" onclick="selectExercise(this)" value="EXE_BASEBALL">야구</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_BASKET">농구</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_CLIMB">암벽등반</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_FOOTBALL">축구</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_FUTSAL">풋살</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_FITNESS">헬스</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_MOUNT">등산</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_PILATES">필라테스</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_TENNIS">테니스</button>
+				            <button type="button" onclick="selectExercise(this)" value="EXE_YOGA">요가</button>
+			        </div>
+			    </div>		    
+			    		    
+			<label for="club-theme">클럽 테마</label>
+	           	<div class="theme-container">
+				    <div class="theme-selection">
+				    	<input type="hidden" id="clubTheme" name="clubTheme" th:value="${clubdto.clubTheme}" />	
+							<button type="button" onclick="selectTheme(this)" value="THM_SPORTCLUB"
+										th:classappend="${clubdto.clubTheme.contains('THM_SPORTCLUB') ? 'selected' : ''}">운동클럽</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_SPORTJOURNAL"
+										th:classappend="${clubdto.clubTheme.contains('THM_SPORTJOURNAL') ? 'selected' : ''}">운동일지</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_FOOD"
+										th:classappend="${clubdto.clubTheme.contains('THM_FOOD') ? 'selected' : ''}">영양제/식단</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_FITNESS"
+										th:classappend="${clubdto.clubTheme.contains('THM_FITNESS') ? 'selected' : ''}">헬스</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_DIET"
+										th:classappend="${clubdto.clubTheme.contains('THM_DIET') ? 'selected' : ''}">체중감량</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_BODYPROFILE"
+										th:classappend="${clubdto.clubTheme.contains('THM_BODYPROFILE') ? 'selected' : ''}">바디프로필</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_RECOVER"
+										th:classappend="${clubdto.clubTheme.contains('THM_RECOVER') ? 'selected' : ''}">부상/재활</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_CONTEST"
+										th:classappend="${clubdto.clubTheme.contains('THM_CONTEST') ? 'selected' : ''}">대회준비</button>
+							<button type="button" onclick="selectTheme(this)" value="THM_EXAM"
+										th:classappend="${clubdto.clubTheme.contains('THM_EXAM') ? 'selected' : ''}">입시준비</button>
+				    </div>
+				</div>
+
+            <label for="club-description">클럽 소개</label>
+            	<div class="club-intro-container">
+              	  <textarea name="clubIntroduction" id="clubIntroduction" maxlength="1000" rows="10" th:text="${clubdto.clubIntroduction}"></textarea>
+				</div>
+            
+           	<!-- 사진 추가 -->
+            <label for="club-image">대표 이미지</label>
+			 <div class="club-image-container">
+			    <div class="club-image-upload">
+			 		<label for="clubImage1">   	
+					   <img id="photo-upload-1" th:src="${clubdto.clubImage1 != null ? '/view/' + clubdto.clubImage1 : '/img/plus_icon.png'}"
+					   							th:classappend="${clubdto.clubImage1 == null ? 'default-icon' : ''}"alt="대표이미지1">
+			        </label>
+			       <input id="clubImage1" name="files" type="file" accept="image/*" onchange="uploadAndPreviewImage(event, 'photo-upload-1')" style="display: none;">
+			    </div>
+			    <div class="club-image-upload">
+					<label for="clubImage2">
+					   <img id="photo-upload-2" th:src="${clubdto.clubImage2 != null ? '/view/' + clubdto.clubImage2 : '/img/plus_icon.png'}"
+					           					th:classappend="${clubdto.clubImage2 == null ? 'default-icon' : ''}" alt="대표이미지2">
+					</label>
+				   <input id="clubImage2" name="files" type="file" accept="image/*" onchange="uploadAndPreviewImage(event, 'photo-upload-2')" style="display: none;">
+			    </div>
+			    <div class="club-image-upload">
+			    	<label for="clubImage3">   	
+					   <img id="photo-upload-3" th:src="${clubdto.clubImage3 != null ? '/view/' + clubdto.clubImage3 : '/img/plus_icon.png'}"  
+					   							th:classappend="${clubdto.clubImage3 == null ? 'default-icon' : ''}"alt="대표이미지3">
+			        </label>					
+			           <input id="clubImage3" name="files" type="file" accept="image/*" onchange="uploadAndPreviewImage(event, 'photo-upload-3')" style="display: none;">
+			    </div>
+			    
+			    <div class="club-image-upload">
+			   	 	<label for="clubImage4">   	
+			           <img id="photo-upload-4" th:src="${clubdto.clubImage4 != null ? '/view/' + clubdto.clubImage4 : '/img/plus_icon.png'}"  
+					   							th:classappend="${clubdto.clubImage4 == null ? 'default-icon' : ''}"alt="대표이미지4">
+			        </label>
+			        <input id="clubImage4" name="files" type="file" accept="image/*" onchange="previewImage(event, 'photo-upload-4')" style="display: none;" />
+			    </div>
+			</div>
+			
+			<!-- 주활동지역 -->
+			<label class="form-label">주활동지역</label> 
+				<input type="text" id="clubAddress" name="clubAddress" th:value="${clubdto.clubAddress}"readonly></input>			
+		
+			<!-- 클럽 공개여부 / 비밀번호 -->
+			<label for="club-isprivate">클럽 공개여부</label>
+			<div class="club-isprivate">
+				    <input type="radio" id="clubIsprivateNo" name="clubIsprivate" th:value="false" 
+				    	   th:checked="${!clubdto.clubIsprivate}" onchange="togglePasswordField()" /> 공개
+				    <input type="radio" id="clubIsprivateYes" name="clubIsprivate" th:value="true" onchange="togglePasswordField()" 
+				    	   th:checked="${clubdto.clubIsprivate}" /> 비공개
+				    <input type="password" id="clubPw" name="clubPw" th:value="${clubdto.clubPw}" 
+				    	   th:style="${clubdto.clubIsprivate ? '' : 'display: none;'}" style="margin-left: 10px;">
+			</div>
+
+			<button type="submit" class="btn btn-primary mt-4" style="margin-bottom: 20px;">수정하기</button>	
+            <button type="reset" class="btn btn-secondary mt-4" style="margin-bottom: 20px;">새로고침</button>
+            <!-- <button type="button" class="btn btn-warning delete-btn" id="delete-btn">클럽 삭제하기</button> -->
+
+        </form>
+        </main>
+    <div th:insert="~{layouts/footer :: footer}"></div>
+
+ <script> 
+		document.addEventListener("DOMContentLoaded", function () {		
+			const selectedExercise = document.getElementById('clubExercise').value;
+			const exercisebuttons = document.querySelectorAll('.exercise-selection button');
+			
+			
+			exercisebuttons.forEach(button => {
+				if(button.value === selectedExercise) {
+					button.classList.add('selected');
+				}
+			});			
+			
+		});
+			
+			
+     // 선호운동 버튼
+    function selectExercise(button) {
+        document.getElementById('clubExercise').value = button.value;
+
+        const exercisebuttons = document.querySelectorAll('.exercise-selection button');
+        exercisebuttons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+    }
+    
+    // 운동테마 버튼
+	function selectTheme(button) {
+	    const themevalue = document.getElementById('clubTheme'); 
+	    let selectedThemes = themevalue.value ? themevalue.value.split(',') : [];
+
+	    if (button.classList.contains('selected')) {
+	        selectedThemes = selectedThemes.filter(theme => theme !== button.value);
+	        button.classList.remove('selected');
+	    } else {
+	    	if (selectedThemes.length >= 4) {
+				alert('최대 4개의 테마만 선택할 수 있습니다');
+				return;
+			}
+	        selectedThemes.push(button.value);
+	        button.classList.add('selected');
+	    }
+	    themevalue.value = selectedThemes.join(',');
+	}
+	
+    // 클럽 공개여부 비밀번호
+    function togglePasswordField() {
+        const isPrivate = document.getElementById('clubIsprivateYes').checked;
+        const passwordField = document.getElementById('clubPw');
+        if (isPrivate) {
+            passwordField.style.display = 'inline-block'; 
+        } else {
+            passwordField.style.display = 'none'; 
+            passwordField.value= '';
+        }
+    }
+	    
+    // 클럽 이미지 업로드
+	function uploadAndPreviewImage(event, targetId) {
+	    const fileInput = event.target;
+	    const file = fileInput.files[0];
+
+	    if (file) {
+	        const reader = new FileReader();
+	        reader.onload = function (e) {
+	            const preview = document.getElementById(targetId);
+	            preview.src = e.target.result; // 미리보기 이미지 업데이트
+	            
+	            preview.classList.remove("default-icon");
+	        };
+	        reader.readAsDataURL(file);
+	    }
+
+	    // 서버로 파일 전송
+	    const formData = new FormData();
+	    formData.append("files", file); // 업로드할 파일 추가
+
+	    fetch("/upload", {
+	        method: "POST",
+	        body: formData
+	    })
+	        .then(response => response.json())
+	        .then(result => {
+	            console.log("파일 업로드 성공:", result);
+	        })
+	        .catch(error => console.error("파일 업로드 실패:", error));
+   }
+
+
+</script>
+</body>
+
+</html>

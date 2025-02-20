@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko-KR" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<!-- meta_tag include -->
+
+<head th:insert="~{layouts/meta_tag :: headMeta}"></head>
+<title>클럽상세</title>
+
+<!-- 공통 css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css"
+	integrity="sha512-TUtnNUXMMWp2IALAR9t2z1vuorOUQL4dPWG3J9ANInEj6xu/rz5fzni/faoEGzuqeY1Z1yGD6COYAW72oiDVYA=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<!-- 여기에 본인 css 작성해주세요 (detail_hj.css) -->
+<!-- Linking CSS files -->
+<link rel="stylesheet" th:href="@{/css/detail_hj.css}" />
+<link rel="stylesheet" th:href="@{/css/detail_yj.css}">
+
+<!-- 공통 js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+	crossorigin="anonymous"></script>
+<style>
+	.member_popup {
+		display: block;
+		position: absolute;
+		background-color: #f6f6f6;
+		color: #333;
+		z-index: 100;
+		padding: 10px;
+		width:200px;
+		border-radius: 20px;
+		top: 50%;
+		left: 80%;
+		transform: translate(-50%, -50%);
+	}
+</style>
+
+<body>
+	<div th:insert="~{layouts/header :: header}"></div>
+
+	<main class="container my-4">
+		<div id="flashMessage" th:if="${message != null}" th:data-message="${message}" style="display: none;"></div>
+		<section>
+			<!-- 대표이미지 -->
+			<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+				<div class="carousel-indicators">
+					<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+						class="active" aria-current="true" aria-label="Slide 1"></button>
+					<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+						aria-label="Slide 2" th:if="${clubdto.clubImage2 != null}"></button>
+					<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+						aria-label="Slide 3" th:if="${clubdto.clubImage3 != null}"></button>
+					<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+						aria-label="Slide 4" th:if="${clubdto.clubImage4 != null}"></button>
+				</div>
+				<div class="carousel-inner-club">
+					<div class="carousel-item active" data-bs-interval="5000">
+						<img th:src="|/view/${clubdto.clubImage1}|" id="clubImage1" alt="Product Image">
+					</div>
+					<div class="carousel-item" th:if="${clubdto.clubImage2 != null}" data-bs-interval="5000">
+						<img th:src="|/view/${clubdto.clubImage2}|" id="clubImage2" alt="Product Image">
+					</div>
+					<div class="carousel-item" th:if="${clubdto.clubImage3 != null}" data-bs-interval="5000">
+						<img th:src="|/view/${clubdto.clubImage3}|" id="clubImage3" alt="Product Image">
+					</div>
+					<div class="carousel-item" th:if="${clubdto.clubImage4 != null}" data-bs-interval="5000">
+						<img th:src="|/view/${clubdto.clubImage4}|" id="clubImage4" alt="Product Image">
+					</div>
+				</div>
+				<th:block th:if="${clubdto.clubImage2 != null}">
+					<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+						data-bs-slide="prev">
+						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+						data-bs-slide="next">
+						<span class="carousel-control-next-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Next</span>
+					</button>
+				</th:block>
+			</div>
+
+			<!-- 클럽 정보 -->
+			<div class="club-header-content mt-3">
+				<div>
+					<h5 class="fw-bold mb-1" id="clubName" th:text="${clubdto.clubName}"></h5>
+					<p class="text-muted mb-0 boardInfo">멤버 [[${clubdto.memberCount}]] · </p>
+
+				</div>
+			</div>
+
+			<!-- 클럽 소개 -->
+			<p style="white-space: pre-line" class="club-description" th:text="${clubdto.clubIntroduction}"></p>
+
+			<!-- 클럽 테마 -->
+			<p class="text-muted" th:text="${clubdto.themeName}" style="margin-bottom: 10px"></p>
+
+			<!-- 가입/탈퇴 버튼 -->
+			<!-- 			<span th:if="${!isMember}">
+				<form action="/club/club_join" method="post" onsubmit="return confirmJoin();" style="display: inline;">
+					<input type="hidden" name="clubCode" th:value="${clubdto.clubCode}" />
+					<button type="submit" class="btn btn-warning">클럽 가입</button>
+					<span th:if="${clubdto.clubIsprivate}">
+						<label for="password">비밀번호:</label>
+						<input type="password" id="clubPw" name="clubPw" placeholder="비밀번호를 입력하세요" required/>						
+					</span>
+				</form>
+			</span> -->
+			<span th:if="${!isMember}">
+				<button type="button" class="btn btn-warning" id="openJoinPopup">클럽 가입</button>
+			</span>
+
+			<!-- 비밀번호 입력 팝업 -->
+			<div class="pw-popup" style="display: none;" id="passwordPopup">
+				<div class="pw-popup-content">
+					<span class="close-popup" id="closePopup">&times;</span>
+
+					<h5 th:if="${!clubdto.clubIsprivate}">클럽 가입 확인</h5>
+					<h5 th:if="${clubdto.clubIsprivate}">비밀번호 입력</h5>
+
+					<p th:if="${!clubdto.clubIsprivate}" id="popupMessage">클럽을 가입하시겠습니까?</p>
+					<form id="joinForm" action="/club/club_join" method="post">
+						<input type="hidden" name="clubCode" id="joinClubCode" th:value="${clubdto.clubCode}" />
+						<div th:if="${clubdto.clubIsprivate}">
+							<input type="password" id="clubPw" name="clubPw" placeholder="비밀번호를 입력하세요" />
+						</div>
+						<div style="text-align: right;">
+							<button type="submit" class="btn btn-primary" id="confirmAction">확인</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<span th:if="${isMember && clubdto.MemId != principal.memId}">
+				<form action="/club/club_joindelete" method="post" onsubmit="return confirm('클럽을 탈퇴하시겠습니까?');"
+					style="display: inline;">
+					<input type="hidden" name="clubCode" th:value="${clubdto.clubCode}" />
+					<button type="submit" class="btn btn-danger">클럽 탈퇴</button>
+				</form>
+			</span>
+
+			<!-- 		<span th:if="${isMember && clubdto.MemId != principal.memId}">
+			    <button type="button" class="btn btn-danger" id="delJoinPopup">클럽 탈퇴</button>
+			</span>
+			
+			<div class="del-popup" style="display: none;" id="delPopup">
+			    <div class="del-popup-content">
+			        <span class="close-popup" id="closeDelPopup">&times;</span>
+			        <h5>클럽 탈퇴 확인</h5>
+			        <p>클럽을 탈퇴하시겠습니까?</p>
+			        <form id="joindeleteForm" action="/club/club_joindelete" method="post">
+			            <input type="hidden" name="clubCode" th:value="${clubdto.clubCode}" />
+			            <button type="submit" class="btn btn-primary" id="delconfirmAction">확인</button>
+			        </form>
+			    </div>
+			</div> -->
+
+			<!-- 수정/삭제 버튼 -->
+			<span th:if="${principal != null and clubdto.MemId == principal.memId}">
+				<a th:href="@{/club/club_modify(clubCode=${clubdto.clubCode})}" class="btn btn-success"
+					style="display: inline;">클럽 수정</a>
+
+				<form action="/club/club_remove" method="post" onsubmit="return confirmClubDelete()"
+					style="display: inline;">
+					<input type="hidden" name="clubCode" th:value="${clubdto.clubCode}" />
+					<button type="submit" class="btn btn-danger">클럽 삭제</button>
+				</form>
+			</span>
+
+		</section>
+		<hr>
+
+		<div class="row" style="height: 310px">
+			<!-- 멤버 섹션 -->
+			<div class="col-md-6">
+				<section class="clubsection">
+					<div class="section-header mb-3">
+						<h6>멤버 [[${clubdto.memberCount}]]</h6>
+						<a th:if="${isMember}" class="more-link"
+							th:href="@{/club/club_member(clubCode=${clubdto.clubCode})}">더보기</a>
+						<a th:unless="${isMember}" class="more-link" th:onclick="openJoinPopup()">더보기</a>
+					</div>
+					<div class="d-flex flex-column">
+						<div class="d-flex align-items-center mb-3" th:each="clubmember : ${clubmembers}">
+							<img th:src="|/view/${clubmember.memPicture}|" alt="프로필이미지"
+								onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">
+
+							<div>
+								<p class="mb-1 fw-bold">
+									[[${clubmember.memNickname}]] <span th:if="${clubmember.memId == clubdto.memId}"
+										class="text-warning small">⭐</span>
+								</p>
+								<small class="text-muted" th:if="${clubmember.memAddressSet != null}"
+									th:text="${clubmember.memAddressSet}"></small>
+								<!-- <small class="text-muted" th:text="${clubdto.clubAddress}"></small> -->
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<!-- 일정 섹션 -->
+			<div class="col-md-6">
+				<section class="clubResSection">
+
+				</section>
+			</div>
+		</div>
+
+		<hr>
+		<!-- 게시글 섹션 -->
+		<section id="divBoard"></section>
+	</main>
+
+	<div th:insert="~{layouts/footer :: footer}"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/gd.js"></script>
+<script layout:fragment="script" th:inline="javascript">
+	const clubCode = /*[[${clubdto.clubCode}]]*/''
+	const isMember = /*[[${isMember}]]*/'';
+	const boardList = document.querySelector("#divBoard");
+
+	const boardInfo = document.querySelector(".boardInfo")
+
+	function printBoardList(data) {
+		boardInfo.innerHTML += `게시글 ${data.total}`
+
+		let str = ''
+		str += `<div class="section-header mb-3">
+				    <h6>게시글 ${data.total}</h6>`;
+		if (isMember) {
+			str += `<a href="/club/club_board?clubCode=${clubCode}&type=ALL" class="more-link">더보기</a>`
+		} else {
+			str += `<a class="more-link" onclick="openJoinPopup()">더보기</a>`
+		}
+		str += `</div>`;
+		if (data.dtoList && data.dtoList.length > 0) {
+			for (const dto of data.dtoList) {
+				str += `<div>
+						<div class="d-flex mb-4">
+							<div class="me-3" style="flex: 1;">
+								<p class="board-text text-muted">${dto.boardText}</p>
+								<small class="text-muted">${dto.memId} . ${dto.modDate} 일 전 . ${dto.type} <span class="ms-3 text-muted">💬${dto.replyCount}</span></small>
+							</div>`
+				if (dto.boardImages.length > 0) {
+					for (const boardImage of dto.boardImages) {
+						str += `<div>
+									<img src="/club/view/s_${boardImage.uuid}_${boardImage.boardImage}" 
+
+									onerror="this.src='https://placehold.co/80'" class="rounded">
+								</div>`
+					}
+				}
+				str += `</div>
+					</div>`
+			}
+		}
+		boardList.innerHTML = str
+	}
+
+	function getBoard(clubCode, page, size) {
+		getBoardList({clubCode, page, size})
+			.then(
+				data => {
+					printBoardList(data)  // 댓글목록처리
+				}
+			).catch(
+				e => console.log(e)
+			)
+	}
+
+	getBoard(clubCode, 1, 3)
+
+	// 클럽가입/탈퇴 팝업
+	const openJoinButton = document.getElementById("openJoinPopup");
+	const confirmAction = document.getElementById("confirmAction");
+	const passwordPopup = document.getElementById("passwordPopup");
+	const joinForm = document.getElementById("joinForm")
+	const delPopup = document.getElementById("delPopup");
+	const delJoinPopup = document.getElementById("delJoinPopup");
+	const closeDelPopup = document.getElementById("closeDelPopup");
+
+	const isPrivate = /*[[${clubdto.clubIsprivate}]]*/ false;
+	const isPw = /*[[${clubdto.clubPw}]]*/''
+
+	// 팝업 열기
+	if (openJoinButton != null) {
+		console.log(openJoinButton);
+
+		openJoinButton.addEventListener("click", (event) => {
+			event.preventDefault();
+			passwordPopup.style.display = "flex";
+		});
+	}
+
+	function openJoinPopup(clubCode) {
+		document.getElementById("joinClubCode").vale = clubCode;
+		passwordPopup.style.display = "flex";
+	}
+
+	// 팝업 내 가입 버튼
+	if (confirmAction) {
+		confirmAction.addEventListener("click", (event) => {
+			event.preventDefault();
+
+			if (isPrivate) {
+				const password = document.getElementById("clubPw").value;
+				if (!password) {
+					alert("비밀번호를 입력해주세요.");
+				} else if (password !== isPw) {
+					alert("비밀번호가 일치하지 않습니다.");
+				}
+				joinForm.submit();
+			} else {
+				joinForm.submit();
+			}
+		});
+	}
+
+	// 팝업 닫기
+	document.getElementById("closePopup").addEventListener("click", () => {
+		passwordPopup.style.display = "none"
+	});
+
+	/* 이미 가입/탈퇴된 회원확인 */
+	const flashMessage = document.getElementById("flashMessage");
+	if (flashMessage) {
+		const message = flashMessage.getAttribute("data-message");
+		if (message) {
+			alert(message);
+		}
+	}
+
+	// carousel 이미지
+	const carousel = document.querySelector("#carouselExampleIndicators");
+	carousel.addEventListener("slide.bs.carousel", function (event) {
+		const nextSlide = carousel.querySelectorAll(".carousel-item")[event.to];
+
+		if (!nextSlide || !nextSlide.querySelector("img")
+			|| !nextSlide.querySelector("img").getAttribute("src")) {
+			event.preventDefault();
+		}
+	});
+
+	const resSection = document.querySelector(".clubResSection");
+
+	async function getClubResList() {
+		const response = await axios.get(`/club/getClubResList/${clubCode}`)
+		return response.data
+	}
+
+	function resStatus(nowCount, totalCount) {
+		if (totalCount > nowCount) {
+			return "모집 중"
+		} else {
+			return "종료"
+		}
+	}
+
+	function printResList() {
+	    getClubResList().then(data => {
+	        let str = `<div class="section-header mb-3">
+	                        <h6>일정 </h6>
+	                    </div>
+	                    <div>`;
+
+	        data.forEach((resData, index) => { // 🔹 index 추가
+	            str += `<div class="d-flex align-items-center mb-3 reservation-item" style="position:relative;">
+	                      <div class="me-3 text-center">
+	                          <div class="bg-light p-1 rounded">
+	                              <strong>${resData.reservationDate.substr(5, 2)}월<br>${resData.reservationDate.substr(8, 2)}일</strong>
+	                          </div>
+	                      </div>
+	                      <div>
+	                          <p class="mb-1 fw-bold">${resData.facilityName}</p>
+	                          <span class="text-danger small">${resStatus(resData.nowMemCount, resData.count)}</span><br>
+	                          <small class="text-muted">${resData.reservationStartTime.substr(0, 5)} · ${resData.nowMemCount}/${resData.count}명</small>
+	                      </div>
+	                      <button type="button" class="btn btn-danger add_schedule_btn" style="margin-left: auto;" onclick="addMember(${resData.reservationCode}, ${resData.clubCode}, ${resData.nowMemCount}, ${resData.count})">참가</button>
+	                      <button type="button" class="btn btn-primary show_reservation_member" data-index="${index}" style="margin-left: 10px;">멤버</button>
+
+	                      <!-- 각 일정마다 개별 팝업 생성 -->
+	                      <p class="member_popup" id="popup-${index}" style="display:none; position:absolute; top:70px; transform:translateX(-50%); background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.2);min-height: 70px;max-height: 500px;overflow-y: scroll;">
+	                          <span class="x_btn" data-index="${index}" style="display:inline-block; padding:5px 12px; border:1px solid #ccc; background-color:#fff; border-radius:5px; cursor:pointer;position: absolute;right: 20px;">X</span>
+	                          <span class="memberNames" data-member-list='${resData.memberList}'></span>
+	                      </p>
+	                  </div>`;
+	        });
+
+	        str += "</div>";
+	        resSection.innerHTML = str;
+
+	        // ✅ HTML이 삽입된 후에 JSON 파싱 및 표시
+	        document.querySelectorAll(".memberNames").forEach(el => {
+	            try {
+	                let memberList = JSON.parse(el.dataset.memberList);
+	                
+	                // ✅ 멤버 정보를 동적으로 생성 (이미지 + 닉네임 한 쌍씩)
+	                let memberHTML = memberList.map(member => {
+	                    let profileImg;
+	                 
+
+	                    // ✅ 소셜 로그인 사용자 (memSocial == 1)이고 프로필 이미지가 있는 경우
+	                    if (member.memSocial === 1 && member.memPicture) {
+	                        profileImg = `<img src="${member.memPicture}" 
+	                                         style="width:30px; height:30px; border-radius:50%; margin-right:5px;"
+	                                         alt="프로필 이미지" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">`;
+	                    }
+	                    // ✅ 일반 사용자 (memSocial == 0)이고 프로필 이미지가 있는 경우
+	                    else if (member.memSocial === 0 && member.memPicture) {
+	                        profileImg = `<img src="/view/${member.memPicture}" 
+	                                         style="width:30px; height:30px; border-radius:50%; margin-right:5px;"
+	                                         alt="프로필 이미지" onerror="this.src='https://ssl.pstatic.net/static/pwe/address/img_profile.png'">`;
+	                    }
+	                    // ✅ 기본 프로필 이미지
+	                    else if(!member.memPicture && member.memId){
+	                        profileImg = `<img src="https://ssl.pstatic.net/static/pwe/address/img_profile.png" 
+	                                         style="width:30px; height:30px; border-radius:50%; margin-right:5px;"
+	                                         alt="기본 프로필 이미지">`;
+	                    }
+
+	                    return `<div style="display: flex; align-items: center; margin-right: 10px; margin-bottom:10px;">
+	                                ${profileImg!= null ? profileImg: ""}
+	                                <span>${member.memNickname != null ? member.memNickname : ""}</span>
+	                            </div>`;
+	                }).join(""); // HTML 문자열 병합
+
+	                // ✅ 최종 HTML 삽입
+	                el.innerHTML = memberHTML;
+
+	            } catch (error) {
+	                console.error("JSON 파싱 오류:", error);
+	            }
+	        });
+
+	        // ✅ "멤버" 버튼 클릭 시 해당 팝업 열기
+	        document.querySelectorAll(".show_reservation_member").forEach(button => {
+	            button.addEventListener("click", (event) => {
+	                let index = event.target.dataset.index;
+	                document.querySelector(`#popup-${index}`).style.display = "block";
+	            });
+	        });
+
+	        // ✅ "X" 버튼 클릭 시 해당 팝업 닫기
+	        document.querySelectorAll(".x_btn").forEach(button => {
+	            button.addEventListener("click", (event) => {
+	                let index = event.target.dataset.index;
+	                document.querySelector(`#popup-${index}`).style.display = "none";
+	            });
+	        });
+	    });
+	}
+
+	// ✅ 초기 실행
+	printResList();
+
+
+
+
+
+	async function addMember(reservationCode, clubCode, nowMemCount, count) {
+
+		if (resStatus(nowMemCount, count) == "종료") {
+			alert("이미 모집 완료된 일정입니다.")
+			return
+		}
+
+		// 가입여부 확인
+		const joinStatus = await axios.get(`/club/checkJoinStatus/${clubCode}`);
+		if (!joinStatus.data) {
+			alert("클럽 가입 후 일정에 참가할 수 있습니다.")
+			openJoinPopup(clubCode);
+			return;
+		}
+
+		const yesNo = confirm("해당 일정에 참가하시겠습니까?")
+		if (yesNo) {
+			const response = await axios.get(`/club/addClubResMember/${reservationCode},${clubCode}`)
+			console.log(response.data);
+			if (response.data == "success") {
+				printResList();
+				alert("일정에 참가되었습니다.")
+				return;
+			} else if (response.data == "exist") {
+				alert("이미 참가한 일정입니다.")
+				return;
+			}
+		}
+	}
+
+
+
+	function confirmClubDelete() {
+		if (confirm("클럽을 삭제하시겠습니까?")) {
+			localStorage.setItem("flashMessage", "클럽 삭제가 성공적으로 완료되었습니다");
+			return true;
+		} return false;
+	}
+
+</script>
+
+</html>

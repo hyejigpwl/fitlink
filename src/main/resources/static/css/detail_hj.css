@@ -1,0 +1,1144 @@
+@charset "UTF-8";
+
+ul {
+	margin: 0;
+}
+
+/* 클럽 메인페이지 */
+#club_main_pg h1 {
+	font-size: 10px;
+}
+
+#club_main_pg .top_wrap{
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	gap: 10px;
+    padding: 10px 0;
+}
+
+#club_main_pg .profile-section {
+	
+}
+
+#club_main_pg .profile-section img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* 내 클럽 상단 카드 */
+#club_main_pg #my_club {
+	background-color: #f5f5f5;
+	margin-top: 0;
+	padding: 50px 0;
+}
+
+#club_main_pg #my_club .container {
+	display: flex;
+	gap: 20px;
+	overflow-x:scroll;
+}
+#club_main_pg #my_club .container::-webkit-scrollbar {
+    display: none;
+  }
+
+#club_main_pg #my_club .card {
+	background-color: #fff;
+	border-radius: 20px;
+	overflow: hidden;
+	min-width: 200px;
+	text-align: center;
+	border: 0;
+	width: 200px;
+}
+
+#club_main_pg #my_club .card.create {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    font-size: 18px;
+    color: #555;
+    min-width: 200px;
+    height: 250px;
+}
+
+#club_main_pg #my_club .card.create img {
+	width: 40px;
+	height: 40px;
+}
+
+#club_main_pg #my_club .card img {
+	width: 100%;
+	height: 140px;
+	/* object-fit: cover; */
+}
+
+#club_main_pg #my_club .card-content {
+	padding: 15px;
+}
+
+#club_main_pg #my_club .card-content h3 {
+	font-size: 16px;
+	margin-bottom: 8px;
+}
+
+#club_main_pg #my_club .card-content p {
+	font-size: 14px;
+	color: #888;
+	margin-bottom: 0;
+}
+
+#club_main_pg #my_club .ad-label {
+	color: #77b900;
+	font-size: 12px;
+	margin-top: 8px;
+}
+
+#club_main_pg #my_club .dot {
+	width: 8px;
+	height: 8px;
+	background-color: red;
+	border-radius: 50%;
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+}
+
+#club_main_pg #my_club .card.ad {
+	position: relative;
+}
+
+
+/* 클럽 테마 */
+#club_main_pg .btn-secondary.active {
+	
+}
+
+#club_main_pg #club_theme .club-location {
+	font-size: 24px;
+	font-weight: bold;
+	margin: 20px 0;
+	text-align: center;
+}
+
+#club_main_pg #club_theme .club-location .region_btn {
+	width: 31px;
+	height: 31px;
+	background-size: 29px 29px;
+	overflow: hidden;
+	display: inline-block;
+	background-repeat: no-repeat;
+	text-indent: -999px;
+	background-image: url(../img/arrow_down_circle.png);
+	background-position: center;
+	position: relative;
+	top: -2px;
+	/* margin-left: 6px; */
+	vertical-align: middle;
+	line-height: 1;
+	overflow: hidden;
+	background-color: #fff;
+	box-shadow: none;
+	border: none;
+	color: transparent;
+}
+
+/* 클럽 목록 */
+#club_main_pg #club_list {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+#club_main_pg #club_list .club-card {
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	padding: 15px;
+	border-bottom: 1px solid #ddd;
+}
+
+#club_main_pg #club_list .club-card:last-of-type {
+	border-bottom: 0;
+}
+
+#club_main_pg #club_list .club-card img {
+	width: 80px;
+	height: 80px;
+	margin-right: 15px;
+	object-fit: cover;
+}
+
+#club_main_pg #club_list .club-content {
+	flex: 1;
+}
+
+#club_main_pg #club_list .club-title {
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+#club_main_pg #club_list .club-description {
+	font-size: 14px;
+	margin-bottom: 8px;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-height: 40px;
+}
+
+#club_main_pg #club_list .club-details {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 12px;
+	color: #aaa;
+}
+
+#club_main_pg #club_list .club-details svg {
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+}
+
+/* 시설 메인페이지 */
+/* #facility_main_pg .filter-bar select, #facility_main_pg .filter-bar button
+	{
+	height: 48px;
+}
+
+#facility_main_pg .tabs button {
+	font-size: 14px;
+} */
+#facility_main_pg .search-bar {
+	display: flex;
+	align-items: center;
+	background-color: white;
+	border: 2px solid #1a73e8;
+	border-radius: 50px;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	margin: 50px auto;
+	padding: 30px 60px;
+	max-width: 1200px;
+}
+
+#facility_main_pg .finder-title {
+	font-size: 0.9em;
+	font-weight: bold;
+	color: #fff;
+	background-color: #4c8cf0;
+	border-radius: 25px;
+	padding: 5px 12px;
+	margin-right: 20px;
+}
+
+#facility_main_pg .search-item {
+	display: flex;
+	flex-direction: column;
+	margin-right: 20px;
+	flex: 1;
+	color: #9e9e9e;
+	border-right: 1px solid #ddd;
+}
+
+#facility_main_pg .search-item label {
+	font-size: 0.85em;
+	color: #9e9e9e;
+	margin-bottom: 2px;
+}
+
+#facility_main_pg .search-item .selected {
+	font-weight: bold;
+	font-size: 1em;
+	color: #333;
+}
+
+#facility_main_pg .close-btn {
+	color: #9e9e9e;
+	font-size: 0.9em;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+#facility_main_pg button.search-btn, 
+#facility_main_pg button.region-btn,
+#facility_main_pg button.public-btn {
+	background-color: #1a73e8;
+	color: white;
+	border: none;
+	border-radius: 25px;
+	padding: 10px 20px;
+	font-size: 1em;
+	font-weight: bold;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+#facility_main_pg button.region-btn,#facility_main_pg button.public-btn  {
+	margin-left: 10px;
+}
+
+#facility_main_pg button.search-btn:hover,
+#facility_main_pg button.region-btn:hover,
+#facility_main_pg button.public-btn:hover {
+	background-color: #1669c7;
+}
+
+/* 세부 조정 */
+#facility_main_pg .search-item:last-of-type {
+	margin-right: 0;
+	border-right: 0;
+}
+
+/* 모달 스타일 */
+/* 배경을 어둡게 처리하는 오버레이 */
+#facility_main_pg .modal-overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+	position: fixed; /* 검색창보다 뒤에 있어야 하므로 z-index를 조절 */
+}
+
+#facility_main_pg .search-modal {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+	width: 390px;
+	height: auto;
+	z-index: 1000;
+}
+
+#facility_main_pg .modal-content {
+	text-align: center;
+	border: 0;
+}
+
+#facility_main_pg .modal .button-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
+	margin: 10px 0;
+}
+
+#facility_main_pg .modal button {
+	padding: 10px;
+	border: none;
+	background-color: #f1f1f1;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+#facility_main_pg .modal button:hover {
+	background-color: #e0e0e0;
+}
+
+#facility_main_pg .modal #close-btn {
+	margin-top: 10px;
+	background-color: #e74c3c;
+	color: white;
+}
+
+#facility_main_pg .counter-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+#facility_main_pg .counter-btn {
+	width: 30px;
+	height: 30px;
+	font-size: 18px;
+	border: none;
+	background-color: #f1f1f1;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+#facility_main_pg .counter-btn:hover {
+	background-color: #e0e0e0;
+}
+
+#facility_main_pg .modal .apply-btn {
+	padding: 10px;
+	background-color: rgb(22, 105, 199);
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+#facility_main_pg .modal .apply-btn:hover {
+	background-color: #1669c7;
+}
+
+#facility_main_pg .calendar-container {
+	margin-top: 10px;
+}
+
+#facility_main_pg .calendar-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+#facility_main_pg .calendar-nav {
+	cursor: pointer;
+}
+
+#facility_main_pg .calendar {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+#facility_main_pg .calendar th, .calendar td {
+	text-align: center;
+	padding: 10px;
+	border: 1px solid #ddd;
+}
+
+#facility_main_pg .calendar td {
+	cursor: pointer;
+}
+
+#facility_main_pg .calendar td:hover {
+	background-color: #f1f1f1;
+}
+
+#facility_main_pg .calendar td.selected {
+	background-color: #1a73e8;
+	color: white;
+	border-radius: 50%;
+}
+
+#facility_main_pg .row {
+	gap: 30px 0;
+}
+
+#facility_main_pg .card {
+	box-shadow: -1px 5px 6px rgba(0, 0, 0, 0.1);
+	border-color: #fff;
+	transition: transform 0.2s ease-in-out;
+	position: relative;
+	border-radius: 8px;
+	border-color: #fff;
+	overflow: hidden;
+	z-index: 100 !important;
+	pointer-events: auto;
+	cursor:pointer;
+}
+#facility_main_pg .card>div.img_wrap{
+	height:200px;
+	overflow:hidden;
+}
+#facility_main_pg .card .card-img {
+	overflow: hidden;
+}
+
+#facility_main_pg .card img {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	width: 100%;
+	height: 200px;
+	transition: transform .3s ease-in-out;
+}
+
+#facility_main_pg .card:hover {
+	overflow: hidden;
+}
+
+#facility_main_pg .card:hover img {
+	transform: scale(1.2);
+}
+
+#facility_main_pg .card .tag {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	background-color: #ffaa00;
+	color: #fff;
+	border-radius: 3px;
+	padding: 2px 7px;
+	display: inline-block;
+}
+
+#facility_main_pg .card .ReservationOnlyClubtag {
+	position: absolute;
+	top: 40px;
+	left: 10px;
+	background-color: #408080;
+	color: #fff;
+	border-radius: 3px;
+	padding: 2px 7px;
+	display: inline-block;
+}
+
+#facility_main_pg .card-body {
+	text-align: center;
+	padding: 10px;
+}
+
+#facility_main_pg .card-title {
+	font-size: 16px;
+	margin-bottom: 8px;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	overflow: hidden;
+}
+
+#facility_main_pg .card-text {
+	color: #555;
+	font-size: 14px;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	overflow: hidden;
+}
+
+/* 로그인 페이지 */
+.login_pg_body {
+	background: #f6f5f7;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	font-family: 'Montserrat', sans-serif;
+	height: 100vh;
+	margin: -20px 0 50px;
+}
+
+#login_pg h1 {
+	font-weight: bold;
+	margin: 0;
+}
+
+#login_pg h2 {
+	text-align: center;
+}
+
+#login_pg p {
+	font-size: 14px;
+	font-weight: 100;
+	line-height: 20px;
+	letter-spacing: 0.5px;
+	margin: 20px 0 30px;
+}
+
+#login_pg span {
+	font-size: 12px;
+}
+
+#login_pg a {
+	color: #333;
+	font-size: 14px;
+	text-decoration: none;
+	margin: 15px 0;
+}
+
+/* #login_pg button {
+	border-radius: 20px;
+	border: 1px solid #FF4B2B;
+	background-color: #FF4B2B;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: transform 80ms ease-in;
+} */
+
+/* #login_pg button:active {
+	transform: scale(0.95);
+}
+
+#login_pg button:focus {
+	outline: none;
+} */
+
+#login_pg button.ghost {
+	background-color: transparent;
+	border-color: #FFFFFF;
+}
+
+#login_pg form {
+	background-color: #FFFFFF;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 50px;
+	height: 100%;
+	text-align: center;
+}
+
+#login_pg form#registerForm{
+	display:block;
+	overflow-y:scroll;
+	padding:50px;
+	text-align:left;
+}
+
+/* #login_pg form#registerForm input{
+	width:100%;
+} */
+
+#login_pg form#registerForm label{
+	width: 100%;
+	display: inline-block;	
+}
+
+#login_pg form#registerForm .form-check-input{
+	width:auto;
+	margin-right:10px;
+	float:none;
+	height:30px;
+}
+
+#login_pg form#registerForm .form-select{
+	margin:8px 0;
+}
+
+#login_pg form#registerForm .form-check{
+	padding-left:0;
+	display: flex;
+	align-items: center;
+}
+
+#login_pg form#registerForm .form-check-input:checked{
+	background-color:#4582ec;
+} 
+
+#login_pg input {
+	background-color: #eee;
+	border: none;
+	padding: 12px 15px;
+	margin: 8px 0;
+	width: 100%;
+}
+
+small.text-danger{
+	display:none;
+}
+
+#login_pg input[type="button"]{
+	background-color:#4582ec;
+	border-radius:0.375rem;
+}
+
+#login_pg.container {
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px
+		rgba(0, 0, 0, 0.22);
+	position: relative;
+	overflow: hidden;
+	max-width: 1200px;
+	width: 100%;
+	min-height: 480px;
+	/* height:100%; */
+}
+
+#login_pg .form-container {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	transition: all 0.6s ease-in-out;
+}
+
+#login_pg .sign-in-container {
+	left: 0;
+	width: 50%;
+	z-index: 2;
+}
+
+#login_pg.container.right-panel-active .sign-in-container {
+	transform: translateX(100%);
+}
+
+#login_pg .sign-up-container {
+	left: 0;
+	width: 50%;
+	opacity: 0;
+	z-index: 1;
+}
+
+#login_pg.container.right-panel-active .sign-up-container {
+	transform: translateX(100%);
+	opacity: 1;
+	z-index: 5;
+	animation: show 0.6s;
+}
+
+@keyframes show { 
+	0%, 49.99% {
+	opacity: 0;
+	z-index: 1;
+}
+
+50%,100%{
+opacity:1;
+z-index:5;	
+}
+}
+#login_pg .overlay-container {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 50%;
+	height: 100%;
+	overflow: hidden;
+	transition: transform 0.6s ease-in-out;
+	z-index: 100;
+}
+
+#login_pg.container.right-panel-active .overlay-container {
+	transform: translateX(-100%);
+}
+
+#login_pg .overlay {
+	background: #4582ec;
+	background: -webkit-linear-gradient(to right, #4582ec 67.65%, #6e49e4);
+	background: linear-gradient(to right, #4582ec 67.65%, #6e49e4);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 0 0;
+	color: #FFFFFF;
+	position: relative;
+	left: -100%;
+	height: 100%;
+	width: 200%;
+	transform: translateX(0);
+	transition: transform 0.6s ease-in-out;
+}
+
+#login_pg.container.right-panel-active .overlay {
+	transform: translateX(50%);
+}
+
+#login_pg .overlay-panel {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 40px;
+	text-align: center;
+	top: 0;
+	height: 100%;
+	width: 50%;
+	transform: translateX(0);
+	transition: transform 0.6s ease-in-out;
+}
+
+#login_pg .overlay-left {
+	transform: translateX(-20%);
+}
+
+#login_pg.container.right-panel-active .overlay-left {
+	transform: translateX(0);
+}
+
+#login_pg .overlay-right {
+	right: 0;
+	transform: translateX(0);
+}
+
+#login_pg.container.right-panel-active .overlay-right {
+	transform: translateX(20%);
+}
+
+#login_pg .social-container {
+	margin: 20px 0;
+}
+
+#login_pg .social-container a {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 5px;
+	height: 40px;
+	width: 40px;
+}
+
+#login_pg .social img{
+	width:100%;
+}
+
+/* 마이페이지 */
+#mypage_pg{
+	display:flex;
+	margin-bottom:0;
+}
+#mypage_pg .sidebar {
+    width: 250px;
+    /* height: 100vh; */
+    background-color: #ffffff;
+    /* box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); */
+    border-right: 1px solid #eee;
+    /* position: fixed; */
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px;
+}
+
+#mypage_pg .sidebar a {
+    text-decoration: none;
+    color: #333;
+    margin: 10px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+#mypage_pg .sidebar a:hover,#mypage_pg .sidebar a.active {
+    color: #007bff;
+}
+
+#mypage_pg .main {
+    /* margin-left: 270px; */
+    padding: 20px;
+    width:100%;
+    max-width:960px;
+}
+
+#mypage_pg .header {
+   /*  display: flex; */
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+#mypage_pg .profile-section {
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    gap: 15px;
+}
+
+#mypage_pg .profile-section img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+#mypage_pg .myinfo_wrap{
+	justify-content:space-between;
+	width:100%;
+	gap:8px;
+	max-width:700px;
+}
+#mypage_pg .myinfo_wrap div{
+	width:50%;
+}
+#mypage_pg .myinfo_wrap div p:last-of-type{
+	border: 1px solid #ddd;
+    border-radius: 50px;
+    padding: 10px 20px;
+    background-color:#f6f6f6;
+    margin-top:10px;
+}
+
+#mypage_pg .feed-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+#mypage_pg .feed-item {
+  position: relative;
+  width: 100%;
+  /* padding-bottom: 100%; Keeps items square */
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#mypage_pg .feed-item .feed-main img {
+	object-fit: cover;
+	width: 100%;
+	height: 200px;
+}
+
+#mypage_pg .feed-item .feed-header {
+	display: flex;
+	background-color: #f6f6f6;
+	justify-content: left;
+	align-items: center;
+	box-sizing: border-box;
+	padding-left: 5px;
+}
+
+#mypage_pg .feed-item .feed-header .user-profile {
+	flex-direction: row;
+}
+
+#mypage_pg .feed-item .feed-content {
+	margin: 3px;
+}
+
+
+#mypage_pg .settings-navigation {
+    margin-top: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+#mypage_pg .settings-navigation a {
+    text-decoration: none;
+    padding: 10px 15px;
+    display: inline-block;
+    color: #333;
+    font-size: 14px;
+}
+
+#mypage_pg .settings-navigation a.active {
+    border-bottom: 2px solid #007bff;
+    color: #007bff;
+}
+
+#mypage_pg .settings-form {
+    /* margin-top: 20px; */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+}
+
+#mypage_pg .form-group {
+    margin-bottom: 40px;
+}
+
+#mypage_pg .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#mypage_pg .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#mypage_pg .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* #mypage_pg .form-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#mypage_pg .btn-cancel {
+    background-color: #ddd;
+} */
+
+#mypage_pg .btn-submit {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#mypage_pg #profileImage{
+	width:200px;
+}
+
+/* 나의 시설 예약페이지 */
+/* 리스트 스타일 */
+#mypage_pg div.main li {
+    list-style: none;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd; /* 테두리 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    background-color: #f9f9f9; /* 배경색 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
+}
+
+/* 텍스트 강조 */
+/* 리스트 스타일 */
+.reservation_pg div.main li p {
+    font-size: 16px; /* 기본 글자 크기 */
+    line-height: 1.6; /* 줄 간격 */
+    margin: 5px 0;
+}
+
+.reservation_pg div.main li p strong {
+    font-weight: bold; /* 제목 강조 */
+    color: #333;
+}
+
+/* 시설명에 커서와 링크 스타일 추가 */
+.reservation_pg div.main li p span[style*="cursor: pointer;"] {
+    color: #007bff; /* 링크 색상 */
+    cursor: pointer; /* 손가락 모양 */
+    text-decoration: underline; /* 밑줄 */
+}
+
+.reservation_pg div.main li p span[style*="cursor: pointer;"]:hover {
+    color: #0056b3; /* 호버 시 색상 */
+}
+
+/* 예약 상태 색상 지정 (예: 상태별로 다르게) */
+.reservation_pg li p:last-child span {
+    font-weight: bold;
+    color: #ff6f61; /* 기본 예약 상태 색 */
+}
+
+/* 예약 완료 */
+.reservation_pg .status-예약완료 {
+    color: #28a745; /* 초록색 */
+    font-weight: bold;
+}
+
+/* 결제 대기 */
+.reservation_pg .status-예약진행중 {
+    color: #ffc107; /* 노란색 */
+    font-weight: bold;
+}
+
+/* 취소 상태 */
+.reservation_pg .status-예약취소 {
+    color: #dc3545; /* 빨간색 */
+    font-weight: bold;
+}
+
+/* 마이페이지 팝업 */
+/* 어두운 배경 오버레이 */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* 반투명 검정 */
+    z-index: 999; /* fitpayCharge 아래 */
+    display: none; /* 기본적으로 숨김 */
+}
+
+#mypage_pg .popup_style{
+	display: none;
+	position:fixed;
+	top:50%;
+	left:50%;
+	transform:translate(-50%,-50%);
+	background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    z-index: 1000; 
+    width: 350px;
+}
+
+/* 마이페이지 송금/충전모달 탭*/
+#mypage_pg .tab-content{
+	display: none;
+	list-style: none;
+	margin: 10px 0;
+}
+
+#mypage_pg .tab-button{
+	position: relative;	
+	display: inline-block;
+	border: none;
+	cursor: pointer;
+	font-size: 20px;
+	background-color: white;
+	border-bottom: 2px solid transparent;
+}
+
+#mypage_pg .tab-content.active{
+	display: block;
+}
+
+#mypage_pg .tab-button.active{
+	font-weight: bold;
+    border-bottom: 2px solid #000;
+}
+
+#mypage_pg .close-button{
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	border: none;
+}
+
+#pay_list_popup{
+	height:400px;
+	overflow-y:scroll;
+}
+
+/* 비밀번호 찾기 */
+#findpw_pg #findPwForm{
+	margin-top:100px;
+	position:relative;
+}
+#findpw_pg #findPwForm .btn_wrap{
+	margin-top:20px;
+	text-align:center;
+	position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    display:flex;
+    gap:10px;
+}
+#findpw_pg #findPwForm .btn_wrap{
+	
+}
+
+/* 운동캘린더 */
+.fc-direction-ltr{
+	min-width:800px !important;
+}
+.fc .fc-daygrid-day-number,.fc-theme-standard td{
+	cursor:pointer;
+}
+.fc .fc-col-header-cell-cushion{
+	text-decoration:auto;
+	color:#333;
+}
+.fc .fc-daygrid-day-top a{
+	color:#333;
+}
+.fc-day-sun a{
+	color:red !important;
+}
+.fc-day-sat a{
+	color:blue !important;
+}
+.popup .popup-buttons{
+	display:flex;
+	gap:10px;
+}
+
+

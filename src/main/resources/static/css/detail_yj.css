@@ -1,0 +1,581 @@
+@charset "UTF-8";
+
+/* 클럽메인페이지 */
+.club-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.club-section .create-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.club-section .create-btn:hover {
+    background-color: #0056b3;
+}
+
+.club-section .club-cards {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.club-cards {
+	height: 100px;
+}
+
+
+.club-section .card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.club-section .card:hover {
+    transform: scale(1.05);
+}
+
+.club-section .club-location {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.filters .filter {
+    background-color: #eee;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.filters .filter.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.filters .filter:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.club-list .club-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.club-list .club-item h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+}
+
+.club-list .club-item p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.club-list .club-item span {
+    font-size: 14px;
+    color: #007bff;
+    align-self: flex-end;
+}
+
+#clubcreate #clubmodify {
+	margin-top: 20px;
+}
+
+.club-description {
+	margin-top: 1rem;
+	margin-bottom: 10px;
+	min-height: 150px;	
+}
+
+/* 시설예약메인페이지 */
+.filter-bar select,
+.filter-bar button {
+    height: 38px;
+}
+
+.tabs button {
+    font-size: 14px;
+}
+
+.card {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card img {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card-body {
+    text-align: center;
+    padding: 10px;
+}
+
+.card-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.card-text {
+    color: #555;
+    font-size: 14px;
+}
+
+/* 클럽 테마 */
+.exercise-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+.exercise-selection  {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.exercise-selection button.selected {
+    background-color: #007bff; 
+    color: white; 
+    border-color: #007bff; 
+}
+
+.theme-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+.theme-selection  {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.theme-selection button, .exercise-selection button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.theme-selection button.selected {
+    background-color: #007bff;
+    color: white; 
+    border-color: #007bff; 
+}
+
+.theme-selection button:hover {
+    background-color: #e0e0e0; 
+    color: black; 
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.club-title {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* 클럽사진 업로드 */
+.club-image-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px; 
+    margin-top: 10px;
+    padding-bottom: 15px;
+}
+
+.club-image-upload {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    position: relative;
+    overflow: hidden; 
+}
+
+.club-image-upload img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.default-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+
+/* 멤버 섹션 스타일 */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.rounded-circle {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+
+.fw-bold {
+    margin-bottom: 0.3rem;
+}
+
+/* 일정 섹션 날짜 */
+.bg-light {
+    width: 50px;
+    height: 50px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.club-headerimg {
+    width: 1176px;
+    height: 306px;
+}
+
+p.fw-bold {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+}
+        
+ /* 게시글 섹션 */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.more-link {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-align: right; 
+    display: block; 
+    margin-left: auto; 
+}
+
+.btn-sm {
+    font-size: 0.85rem;
+    margin-right: 5px;
+}
+
+.d-flex img {
+    object-fit: cover;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.board-text {
+	font-size: 18px;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	overflow: hidden;
+}
+
+/* 클럽생성 주소선택폼 */
+.form-row {
+	width: 700px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 15px;
+}
+
+.form-select {
+	flex: 1;
+}
+
+.clubsection, .clubResSection  {
+	margin-top: 0px;
+}
+
+.carousel-inner-club {
+	max-height: 500px; 
+    display: flex;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+}
+    
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 12px;
+    z-index: 10; 
+}
+
+/* 클럽상세보기 - 비공개클럽 팝업 */
+.pw-popup, .del-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* 반투명 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.pw-popup-content, .del-popup-content {
+    background: #ffffff;
+    padding: 20px 30px;
+    border-radius: 10px; /* 둥근 모서리 */
+    width: 400px;
+    max-width: 90%; /* 작은 화면에서도 적절한 크기 */
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    font-family: 'Arial', sans-serif;
+    position: relative;
+}
+
+.pw-popup h5,
+.del-popup h5 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.pw-popup .btn,
+.del-popup .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pw-popup .btn-primary,
+.del-popup .btn-primary {
+    background-color: #007bff;
+    color: white;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.pw-popup .btn-primary:hover,
+.del-popup .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.pw-popup .close-popup, 
+.del-popup .close-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    color: #aaa;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.pw-popup .close-popup:hover, 
+.del-popup .close-popup:hover {
+    color: #333;
+}
+
+/*마이페이지 - 나의클럽관리*/
+.myclub-list {
+	padding: 30px 20px;	
+	width: 300px;
+}
+
+.myclub-list-item,
+.myclub-member-item {
+    text-decoration: none;
+    color: #333;
+    margin: 10px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.myclub-member {
+	border-left: 1px solid #eee;
+	padding: 30px 20px;
+	width: 550px;	
+}
+
+.clubbutton {
+	background: white;
+	border: none;
+}
+
+.mem {
+	width: 75px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.delbtn {
+	height: 30px;
+	align-items: center;
+	display: flex;
+	font-size:12px;
+}
+
+.clubmem {
+	width: 220px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.report-from {
+	margin-left: 0px;
+}
+
+.region-btn {
+    border: 1px solid #007bff;
+    padding: 5px 15px;
+    background: white;
+    cursor: pointer;
+}
+
+/* 시설위치모달 */
+#mapModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 0 !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    max-width: 850px !important; 
+    width: 85%;
+    max-height: 550px !important; 
+    height: 550px !important;
+    z-index: 999 !important;
+}
+
+#mapModal .modal-dialog {
+    max-width: 100% !important;
+    width: 100%;
+    height: 100% !important;
+    margin: 0 !important; 
+    display: flex;
+    flex-direction: column;
+}
+
+#mapModal .modal-body {
+	padding: 25px !important;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#mapModal .modal-content {
+    height: 100% !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+}
+
+#mapModal #map {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.modal-backdrop {
+    display: none !important;
+}
+
+.modal-footer .btn-primary {
+    background-color: #1a73e8 !important; 
+    border-color: #1669c7 !important;
+    color: white !important;
+}
+
+html {
+    overflow-y: scroll; 
+}
+
+body.modal-open {
+    padding-right: var(--scrollbar-width, 0px) !important; 
+    overflow: hidden !important;
+}
+
+body:not(.modal-open) {
+    padding-right: 0px !important;
+}
+

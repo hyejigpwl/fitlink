@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>임시 비밀번호 안내</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .email-container {
+            background: #ffffff;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .password-box {
+            background: #007bff;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>FITLINK 임시 비밀번호 안내</h2>
+        <p>안녕하세요,</p>
+        <p>요청하신 임시 비밀번호를 발급해 드립니다. 아래 임시 비밀번호를 사용하여 로그인 후, 반드시 비밀번호를 변경해 주세요.</p>
+        <div class="password-box">{TEMP_PASSWORD}</div>
+        <p>비밀번호 변경은 <a href="https://fitlink92.shop/member/mypage_modify">여기</a>에서 할 수 있습니다.</p>
+        <p class="footer">이 메일은 자동 발송 메일입니다. 문의 사항이 있으시면 고객센터에 문의하세요.</p>
+    </div>
+</body>
+</html>

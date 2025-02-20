@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>FITLINK | ADMIN</title>
+<!-- Tell the browser to be responsive to screen width -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- 공통 css -->
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<!-- Font Awesome -->
+<link rel="stylesheet"
+	href="../../plugins/fontawesome-free/css/all.min.css">
+<!-- Ionicons -->
+<link rel="stylesheet"
+	href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<!-- overlayScrollbars -->
+<link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+<!-- Google Font: Source Sans Pro -->
+<link
+	href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+	<!-- Site wrapper -->
+	<div class="wrapper">
+		<!-- Navbar -->
+		<nav
+			class="main-header navbar navbar-expand navbar-white navbar-light">
+			<!-- Left navbar links -->
+			<ul class="navbar-nav">
+				<li class="nav-item"><a class="nav-link" data-widget="pushmenu"
+					href="#" role="button"><i class="fas fa-bars"></i></a></li>
+				<li class="nav-item d-none d-sm-inline-block"><a
+					href="/admin/main" class="nav-link">Home</a></li>
+			</ul>
+
+			<!-- Right navbar links -->
+			<ul class="navbar-nav ml-auto">
+				<!-- Notifications Dropdown Menu -->
+				<li class="nav-item">
+					<!-- 로그아웃 버튼 만들기 --> <a href="/member/logout"
+					class="btn btn-block btn-outline-danger">Logout</a>
+				</li>
+			</ul>
+
+		</nav>
+		<!-- /.navbar -->
+
+		<!-- Main Sidebar Container -->
+		<aside class="main-sidebar sidebar-dark-primary elevation-4">
+			<!-- Brand Logo -->
+			<a href="/admin/main" class="brand-link"> <img
+				src="/img/fitlink.png" alt="Fitlink Logo"
+				class="brand-image img-circle elevation-3" style="opacity: .8">
+				<span class="brand-text font-weight-light">FITLINK</span>
+			</a>
+
+			<!-- Sidebar -->
+			<div class="sidebar">
+				<!-- Sidebar user panel (optional) -->
+				<div class="user-panel mt-3 pb-3 mb-3 d-flex">
+					<div class="image">
+						<img
+							th:src="${manager.memPicture != null && manager.memPicture != '' ? '/view/' + manager.memPicture : 'https://ssl.pstatic.net/static/pwe/address/img_profile.png'}"
+							class="img-circle elevation-2" alt="User Image">
+					</div>
+
+
+					<div class="info">
+						<a href="/member/mypage" class="d-block"
+							th:text="${manager.memNickname}"></a>
+					</div>
+				</div>
+
+				<!-- Sidebar Menu -->
+				<nav class="mt-2">
+					<ul class="nav nav-pills nav-sidebar flex-column"
+						data-widget="treeview" role="menu" data-accordion="false">
+						<!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+						<li class="nav-item has-treeview menu-open"><a
+							href="/admin/main" class="nav-link active"> <i
+								class="nav-icon fas fa-tachometer-alt"></i>
+								<p>
+									시설 정보 <i class="right fas fa-angle-left"></i>
+								</p>
+						</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item"><a href="/admin/Facility_add"
+									class="nav-link active"> <i class="far fa-circle nav-icon"></i>
+										<p>시설 등록</p>
+								</a></li>
+								<li class="nav-item"><a href="/admin/Facility_list"
+									class="nav-link"> <i class="far fa-circle nav-icon"></i>
+										<p>시설 목록</p>
+								</a></li>
+							</ul></li>
+
+						<li class="nav-item has-treeview"><a href="/admin/main"
+							class="nav-link"> <i class="nav-icon fas fa-tachometer-alt"></i>
+								<p>
+									예약 <i class="right fas fa-angle-left"></i>
+								</p>
+						</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item"><a href="/admin/Reservation_list"
+									class="nav-link"> <i class="far fa-circle nav-icon"></i>
+										<p>예약 목록</p>
+								</a></li>
+								<li class="nav-item">
+									<a href="/admin/calendar" class="nav-link"> 
+										<i class="far fa-circle nav-icon"></i>
+										<p>시설 예약 현황</p>
+								</a>
+							</li>
+							</ul>
+						</li>
+						<li class="nav-item has-treeview">
+							<a href="/admin/main" class="nav-link"> 
+								<i class="nav-icon fas fa-tachometer-alt"></i>
+								<p>
+									매출 
+									<i class="right fas fa-angle-left"></i>
+								</p>
+							</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="/admin/revenue" class="nav-link"> 
+										<i class="far fa-circle nav-icon"></i>
+										<p>매출 상세</p>
+									</a>
+								</li>
+								
+								 </ul>
+							  </li>
+		</aside>
+
+		<!-- Content Wrapper. Contains page content -->
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1>FACILITY ADD</h1>
+						</div>
+						<div class="col-sm-6">
+							<ol class="breadcrumb float-sm-right">
+								<li class="breadcrumb-item"><a href="/admin/main">Home</a></li>
+								<li class="breadcrumb-item active">FACILITY ADD</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+				<!-- /.container-fluid -->
+			</section>
+
+			<!-- Main content -->
+			<section class="content">
+				<form id="facilityAdd" action="/admin/Facility_add" method="post"
+					enctype="multipart/form-data">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="card card-primary">
+								<div class="card-header">
+									<h3 class="card-title">Facility</h3>
+
+									<div class="card-tools">
+										<button type="button" class="btn btn-tool"
+											data-card-widget="collapse" data-toggle="tooltip"
+											title="Collapse">
+											<i class="fas fa-minus"></i>
+										</button>
+									</div>
+								</div>
+								<div class="card-body">
+
+									<div class="form-group">
+										<label for="facilityName">시설명</label> <input
+											type="text" class="form-control" id="facilityName"
+											name="facilityName" required>
+									</div>
+
+									<div class="form-group">
+										<label for="inputfacilityAddress">시설주소</label> <br />
+										<input type="text" id="facilityZipcode" name="facilityZipcode" placeholder="우편번호" /> 
+										<input type="button" onclick="searchPostcode()" value="우편번호 찾기" /><br> 
+										<input type="text" class="form-control" id="facilityAddress" name="facilityAddress" placeholder="주소" required /> 
+										<input type="text" id="facilityAddressDetail" name="facilityAddressDetail" placeholder="상세주소" required />
+										
+										<input type="hidden" id="facilityLat" name="facilityLat">
+										<input type="hidden" id="facilityLongt" name="facilityLongt">
+
+											
+											
+									</div>
+
+
+									<div class="form-group">
+										<label for="inputDescription">시설 설명</label>
+										<textarea id="facilityDescription" name="facilityDescription"
+											class="form-control" rows="4"></textarea>
+									</div>
+
+									<div class="form-group">
+										<label for="inputRegisterId">Register ID</label> <input
+											type="text" id="memId" name="memId" class="form-control"
+											th:value="${userId}" readonly />
+									</div>
+
+								</div>
+								<!-- /.card-body -->
+							</div>
+							<!-- /.card -->
+							<div class="card card-secondary">
+								<div class="card-header">
+									<h3 class="card-title">가격</h3>
+									<div class="card-tools">
+										<button type="button" class="btn btn-tool"
+											data-card-widget="collapse" data-toggle="tooltip"
+											title="Collapse">
+											<i class="fas fa-minus"></i>
+										</button>
+									</div>
+								</div>
+								<div class="card-body">
+
+									<!-- Row for Facility Start and End Time -->
+									<div class="form-group row">
+										<!-- Facility Start Time -->
+										<div class="col-md-6">
+											<label for="facilityStartTime">시설 개장시간</label>
+											<div class="input-group">
+												<input type="time" id="facilityStartTime"
+													name="facilityStartTime" class="form-control timepicker"
+													placeholder="Select start time">
+											</div>
+										</div>
+
+										<!-- Facility End Time -->
+										<div class="col-md-6">
+											<label for="facilityEndTime">시설 마감시간</label>
+											<div class="input-group">
+												<input type="time" id="facilityEndTime"
+													name="facilityEndTime" class="form-control timepicker"
+													placeholder="Select end time">
+											</div>
+										</div>
+									</div>
+									<div id="timeErrorMessage" style="color: red; display: none;">
+										<p>* 시설 개장 시간이 시설 마감 시간보다 크거나 같을 수 없습니다.</p>
+										<p>* 잘못된 시간 설정이므로 다시 선택해주세요.</p>
+									</div>
+
+									<!-- Price Input -->
+									<div class="form-group">
+										<label for="price">시간 당 가격</label> 
+										<input type="text" id="formattedPrice" class="form-control">
+										<input type="hidden" id="price" name="price">
+									</div>
+
+								</div>
+								<!-- /.card-body -->
+							</div>
+						</div>
+						<div class="col-md-6">
+
+							<div class="card card-primary">
+								<div class="card-header">
+									<h3 class="card-title">Files</h3>
+									<div class="card-tools">
+										<button type="button" class="btn btn-tool"
+											data-card-widget="collapse" data-toggle="tooltip"
+											title="Collapse">
+											<i class="fas fa-minus"></i>
+										</button>
+									</div>
+								</div>
+								<div class="card-body p-0">
+									<table class="table">
+										<thead>
+											<tr>
+												<th>File Name</th>
+												<th class="text-right">Actions</th>
+											</tr>
+										</thead>
+										<tbody id="fileList">
+											<!-- Dynamically added file rows will appear here -->
+										</tbody>
+										<p id="errorMessage" style="color: red;"></p>
+									</table>
+									<!-- Hidden File Input Section -->
+									<input type="file" id="fileInput" name="files" multiple
+										accept="image/*" style="display: none;">
+									<div class="p-3">
+										<button type="button" id="addFilesBtn" class="btn btn-primary">Add
+											Files</button>
+									</div>
+								</div>
+							</div>
+
+							<div class="card card-secondary">
+								<div class="card-header">
+									<h3 class="card-title">Facility Detail</h3>
+									<div class="card-tools">
+										<button type="button" class="btn btn-tool"
+											data-card-widget="collapse" data-toggle="tooltip"
+											title="Collapse">
+											<i class="fas fa-minus"></i>
+										</button>
+									</div>
+								</div>
+
+								<div class="card-body">
+									<div class=" form-group">
+										<label for="exerciseCode">Facility Type</label>
+										<form>
+											<select name="exerciseCode">
+												<option value="null" disabled>=== 선택 ===</option>
+												<option value="EXE_FOOTBALL">축구</option>
+												<option value="EXE_BASKET">농구</option>
+												<option value="EXE_BADMINTON">배드민턴</option>
+												<option value="EXE_CLIMB">암벽등반</option>
+												<option value="EXE_FUTSAL">풋살</option>
+												<option value="EXE_BASEBALL">야구</option>
+												<option value="EXE_YOGA">요가</option>
+												<option value="EXE_TENNIS">테니스</option>
+												<option value="EXE_PILATES">필라테스</option>
+												<option value="EXE_FITNESS">헬스</option>
+											</select>
+										</form>
+									</div>
+
+									<div class=" form-group">
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox"
+												id="facilityIsOnlyClub" name="facilityIsOnlyClub"> <label
+												class="form-check-label" for="facilityIsOnlyClub">Reservation
+												Only Club</label>
+										</div>
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+							<a href="/admin/main" class="btn btn-secondary">Cancel</a> <input
+								type="submit" value="Create new Facility"
+								class="btn btn-success" style="margin-left: auto;">
+						</div>
+				</form>
+			</section>
+			<!-- /.content -->
+		</div>
+		<!-- /.content-wrapper -->
+
+		<!-- FOOTER  -->
+		<div th:insert="~{layouts/footer :: footer}"></div>
+
+		<!-- Control Sidebar -->
+		<aside class="control-sidebar control-sidebar-dark">
+			<!-- Control sidebar content goes here -->
+		</aside>
+		<!-- /.control-sidebar -->
+	</div>
+	<!-- ./wrapper -->
+
+	<!-- jQuery -->
+	<script src="../../plugins/jquery/jquery.min.js"></script>
+	<!-- Bootstrap 4 -->
+	<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<!-- AdminLTE App -->
+	<script src="../../dist/js/adminlte.min.js"></script>
+	<!-- AdminLTE for demo purposes -->
+	<script src="../../dist/js/admin.js"></script>
+
+	<script src="/js/file_upload.js"></script>
+
+
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script>
+		flatpickr(".timepicker", {
+			enableTime : true, // Enable time selection
+			noCalendar : true, // Disable calendar
+			dateFormat : "H:00", // Format: Hours:Minutes (24-hour format)
+			time_24hr : true, // Use 24-hour clock
+			minuteIncrement : 60
+		// Set minute intervals to 10 minutes
+		});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded',
+				function() {
+					const startTimeInput = document
+							.getElementById('facilityStartTime');
+					const endTimeInput = document
+							.getElementById('facilityEndTime');
+					const errorMessage = document
+							.getElementById('timeErrorMessage');
+
+					function validateTime() {
+						const startTime = startTimeInput.value;
+						const endTime = endTimeInput.value;
+
+						if (startTime && endTime) {
+							if (startTime >= endTime) {
+								// Display error message
+								errorMessage.style.display = 'block';
+
+								// Reset inputs
+								startTimeInput.value = '';
+								endTimeInput.value = '';
+							} else {
+								// Hide error message
+								errorMessage.style.display = 'none';
+							}
+						}
+					}
+
+					// Add event listeners to validate on input change
+					startTimeInput.addEventListener('change', validateTime);
+					endTimeInput.addEventListener('change', validateTime); 
+				});
+				
+				
+				const formattedPrice = document.querySelector('#formattedPrice');
+				const hiddenPrice = document.querySelector('#price');
+
+				formattedPrice.addEventListener('keyup', function (e) {
+				    let value = e.target.value.replaceAll(',', ''); // 쉼표 제거
+				    if (isNaN(value) || value === '') {
+				        formattedPrice.value = ''; // 표시용 필드 초기화
+				        hiddenPrice.value = ''; // 숨겨진 필드 초기화
+				        return;
+				    }
+				    const numericValue = parseInt(value, 10);
+				    formattedPrice.value = numericValue.toLocaleString('ko-KR'); // 쉼표 추가 포맷
+				    hiddenPrice.value = numericValue; // 실제 숫자 값 저장
+				});
+	</script>
+
+
+	<!-- 도로명 주소 노출 -->
+	<script
+		src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script>
+		function searchPostcode() {
+			new daum.Postcode(
+					{
+						oncomplete : function(data) {
+							// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+							// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+							// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+							var addr = ''; // 주소 변수
+							var extraAddr = ''; // 참고항목 변수
+
+							//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+							if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+								addr = data.roadAddress;
+							} else { // 사용자가 지번 주소를 선택했을 경우(J)
+								addr = data.jibunAddress;
+							}
+
+							// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+							if (data.userSelectedType === 'R') {
+								// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+								// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+								if (data.bname !== ''
+										&& /[동|로|가]$/g.test(data.bname)) {
+									extraAddr += data.bname;
+								}
+								// 건물명이 있고, 공동주택일 경우 추가한다.
+								if (data.buildingName !== ''
+										&& data.apartment === 'Y') {
+									extraAddr += (extraAddr !== '' ? ', '
+											+ data.buildingName
+											: data.buildingName);
+								}
+								// 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+								if (extraAddr !== '') {
+									extraAddr = ' (' + extraAddr + ')';
+								}
+								// 조합된 참고항목을 해당 필드에 넣는다.
+								document.getElementById("facilityAddress").value = extraAddr;
+
+							} else {
+								document.getElementById("facilityAddress").value = '';
+							}
+
+							// 우편번호와 주소 정보를 해당 필드에 넣는다.
+							document.getElementById("facilityZipcode").value = data.zonecode;
+							document.getElementById("facilityAddress").value = addr;
+							// 커서를 상세주소 필드로 이동한다.
+							document.getElementById("facilityAddressDetail")
+									.focus();
+						}
+					}).open();
+		}
+	</script>
+	
+
+
+</body>
+</html>
